@@ -1,0 +1,36 @@
+Combobox active-option timing — BEFORE/AFTER
+BEFORE = origin/main components/motion/combobox/context.tsx; AFTER = this PR. One sitting, dev server restarted across the swap.
+Browser numbers are whole-frame. Simulator numbers are the web view only
+(top rows cropped: safari-iphone 186, safari-ipad 172 — iOS status bar plus Safari chrome).
+
+combobox-closed
+    chrome-desktop : identical (max channel diff 0)
+    chrome-mobile  : identical (max channel diff 0)
+    safari-ipad    : identical (max channel diff 0)
+    safari-iphone  : (not captured)
+
+combobox-disabled-open
+    chrome-desktop : max 108 at (453, 477), 29135 px differ, bbox (437, 463, 843, 643)
+    chrome-mobile  : max 108 at (47, 469), 23519 px differ, bbox (31, 455, 359, 635)
+    safari-ipad    : max 108 at (447, 1389), 116538 px differ, bbox (428, 1362, 1240, 1722)
+    safari-iphone  : (not captured)
+
+combobox-filtered-open
+    chrome-desktop : identical (max channel diff 0)
+    chrome-mobile  : identical (max channel diff 0)
+    safari-ipad    : identical (max channel diff 0)
+    safari-iphone  : (not captured)
+
+combobox-moved-open
+    chrome-desktop : identical (max channel diff 0)
+    chrome-mobile  : identical (max channel diff 0)
+    safari-ipad    : identical (max channel diff 0)
+    safari-iphone  : (not captured)
+
+combobox-open
+    chrome-desktop : identical (max channel diff 0)
+    chrome-mobile  : identical (max channel diff 0)
+    safari-ipad    : identical (max channel diff 0)
+    safari-iphone  : (not captured)
+
+15 pairs across 5 scenes · worst max channel diff 108
