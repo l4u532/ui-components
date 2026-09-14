@@ -155,6 +155,20 @@ export function Select({
     };
   }, [open, setOpen]);
 
+  // Hand focus back on close. Picking an option unmounts the focused option
+  // button, and WebKit never focuses a clicked trigger, so without this the
+  // page's focus lands on <body> after every selection or Escape.
+  useEffect(() => {
+    if (!open) return;
+    const previousFocus =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    return () => {
+      previousFocus?.focus({ preventScroll: true });
+    };
+  }, [open]);
+
   const ctx = useMemo<SelectContextValue>(
     () => ({
       value: current,
