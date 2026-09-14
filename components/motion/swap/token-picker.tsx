@@ -33,12 +33,23 @@ export function TokenPicker({
   const [q, setQ] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Focus the search on open and hand focus back on close. WebKit does not
+  // focus a button on click, so a keyboard-opened picker is the case that
+  // needs the hand-back; with nothing captured, focus stays where it is.
   useEffect(() => {
     if (!open) return;
     setQ("");
-    requestAnimationFrame(() =>
+    const previousFocus =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    const frame = requestAnimationFrame(() =>
       inputRef.current?.focus({ preventScroll: true }),
     );
+    return () => {
+      cancelAnimationFrame(frame);
+      previousFocus?.focus({ preventScroll: true });
+    };
   }, [open]);
 
   useEffect(() => {
