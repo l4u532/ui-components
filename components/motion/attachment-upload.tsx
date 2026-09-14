@@ -326,10 +326,11 @@ function ImageThumbnail({
       <motion.button
         type="button"
         aria-label={`Preview ${item.name}`}
-        onClick={(event) => {
-          event.currentTarget.blur();
-          onPreview(item);
-        }}
+        // Keep focus on the thumbnail: the preview overlay hands focus back to
+        // whatever was focused when it opened, and a blurred trigger sends
+        // that hand-back to <body>. The mouse ring is already suppressed by
+        // focus-visible.
+        onClick={() => onPreview(item)}
         whileTap={reduce ? undefined : { scale: 0.94 }}
         transition={SPRING_PRESS}
         className="group/image relative size-9 shrink-0 overflow-hidden rounded-[10px] bg-muted outline-none ring-1 ring-border/70 focus-visible:ring-2 focus-visible:ring-ring"
