@@ -143,10 +143,20 @@ export function CommandPalette({
     moveTo(null);
   });
 
+  // Focus the field on open and hand focus back on close. WebKit does not
+  // focus a button on click, so a keyboard-opened palette is the case that
+  // needs the hand-back; with nothing captured, focus stays where it is.
   useEffect(() => {
     if (!open) return;
+    const previousFocus =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
     const frame = requestAnimationFrame(() => inputRef.current?.focus());
-    return () => cancelAnimationFrame(frame);
+    return () => {
+      cancelAnimationFrame(frame);
+      previousFocus?.focus({ preventScroll: true });
+    };
   }, [open]);
 
   const onKeyDown = (e: React.KeyboardEvent) => {

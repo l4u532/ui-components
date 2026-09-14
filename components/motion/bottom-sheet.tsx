@@ -102,6 +102,26 @@ export function BottomSheet({
     };
   }, [open, onOpenChange]);
 
+  // A modal dialog takes focus on open and hands it back on close. WebKit does
+  // not focus a button on click, so without the hand-back Safari leaves focus
+  // on <body> after every close (Chrome after a drag-dismiss, which blurs the
+  // trigger). Its own effect: the lock above re-runs when `onOpenChange`
+  // changes identity, and focus must not bounce with it.
+  useEffect(() => {
+    if (!open) return;
+    const previousFocus =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    const frame = requestAnimationFrame(() => {
+      sheetRef.current?.focus({ preventScroll: true });
+    });
+    return () => {
+      cancelAnimationFrame(frame);
+      previousFocus?.focus({ preventScroll: true });
+    };
+  }, [open]);
+
   const onDragEnd = (_: unknown, info: PanInfo) => {
     const velocity = info.velocity.y;
     const offset = info.offset.y;
@@ -199,6 +219,7 @@ export function BottomSheet({
               )}
               role="dialog"
               aria-modal="true"
+              tabIndex={-1}
               aria-labelledby={title ? titleId : undefined}
               aria-describedby={description ? descriptionId : undefined}
               aria-label={title ? undefined : "Bottom sheet"}
