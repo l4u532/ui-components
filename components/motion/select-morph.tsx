@@ -140,6 +140,26 @@ export function MorphSelect({
     };
   }, [open]);
 
+  // Hand focus back on close. Picking an option unmounts the focused option
+  // button, and WebKit never focuses a clicked trigger, so without this the
+  // page's focus lands on <body> after every selection or Escape. The trigger
+  // itself unmounts while the panel is open (it morphs into the surface), so
+  // the element captured on open is usually gone by then: fall back to the
+  // remounted trigger by id.
+  useEffect(() => {
+    if (!open) return;
+    const previousFocus =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    return () => {
+      const target = previousFocus?.isConnected
+        ? previousFocus
+        : document.getElementById(`${baseId}-trigger`);
+      target?.focus({ preventScroll: true });
+    };
+  }, [open, baseId]);
+
   const ctx = useMemo<MorphContextValue>(
     () => ({
       value: current,
