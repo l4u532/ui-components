@@ -409,6 +409,8 @@ export function MessageScroller({
     <section
       ref={setViewportRef}
       aria-label={label}
+      // biome-ignore lint/a11y/noNoninteractiveTabindex: a scroll region needs a tab stop, or keyboard users cannot scroll it (axe scrollable-region-focusable)
+      tabIndex={0}
       {...restViewportProps}
       onScroll={(event) => {
         handleScroll();

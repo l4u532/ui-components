@@ -266,8 +266,10 @@ export function InfiniteMasonry<T>({
       ref={scrollRef}
       aria-label={ariaLabel}
       aria-busy={loading}
+      // biome-ignore lint/a11y/noNoninteractiveTabindex: a scroll region needs a tab stop, or keyboard users cannot scroll it (axe scrollable-region-focusable)
+      tabIndex={0}
       className={cn(
-        "w-full contain-[layout_paint] overflow-y-auto overscroll-none rounded-3xl border border-border bg-background p-3 [overflow-anchor:none] [scrollbar-gutter:stable]",
+        "w-full contain-[layout_paint] overflow-y-auto overscroll-none rounded-3xl border border-border bg-background p-3 outline-none [overflow-anchor:none] [scrollbar-gutter:stable] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
         className,
       )}
     >

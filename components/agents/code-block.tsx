@@ -159,7 +159,10 @@ export function CodeBlock({
         ref={viewportRef}
         role={streaming ? "log" : undefined}
         aria-live={streaming ? "polite" : undefined}
-        className="scrollbar-hide overflow-auto border-t border-foreground/[0.06] py-2"
+        // A scroll region needs a tab stop, or keyboard users cannot scroll it
+        // (axe scrollable-region-focusable).
+        tabIndex={0}
+        className="scrollbar-hide overflow-auto border-t border-foreground/[0.06] py-2 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
         style={{ maxHeight }}
       >
         <pre className="m-0 min-w-max font-mono text-xs leading-5 text-foreground/85">

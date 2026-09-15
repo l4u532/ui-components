@@ -242,8 +242,10 @@ export function AgentActivity({
       >
         <div
           ref={viewportRef}
+          // A scroll region needs a tab stop, or keyboard users cannot scroll it.
+          tabIndex={capped && expanded && !working ? 0 : undefined}
           className={cn(
-            "scrollbar-hide pr-1",
+            "scrollbar-hide pr-1 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
             capped && expanded && !working ? "overflow-y-auto" : "overflow-y-hidden",
           )}
           style={{ height: viewportHeight, maskImage, WebkitMaskImage: maskImage }}

@@ -86,7 +86,11 @@ export function InstallCommand({
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      <div
+        // biome-ignore lint/a11y/noNoninteractiveTabindex: a scroll region needs a tab stop, or keyboard users cannot scroll it (axe scrollable-region-focusable)
+        tabIndex={0}
+        className="overflow-x-auto outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+      >
         <div className="min-w-max px-5 py-4 font-mono text-[13px] whitespace-nowrap">
           <span className="select-none text-[#6e7781] dark:text-[#8b949e]">{"$ "}</span>
           <span className="text-[#1f6feb] dark:text-[#ffa657]">

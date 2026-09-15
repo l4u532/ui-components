@@ -18,6 +18,18 @@ import {
 // points for the motion lib, while Lenis needs a (t) => number easing fn.
 const EASE_SCROLL = (t: number) => Math.min(1, 1.001 - 2 ** (-10 * t));
 
+// A contained scroller is a scroll region: it needs a tab stop, or keyboard
+// users cannot scroll it (axe reports scrollable-region-focusable). The
+// page-level root scrolls as the window does and needs none, so both render
+// paths gate the tab stop and its inset ring on `root === false`.
+const scrollRegionClassName = (className?: string) =>
+  [
+    "outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
 export type ScrollTarget = number | string | HTMLElement;
 
 export type ScrollToOptions = {
@@ -200,7 +212,11 @@ export function SmoothScroll({
   if (reduce) {
     return (
       <SmoothScrollContext.Provider value={api}>
-        <div ref={containerRef} className={className}>
+        <div
+          ref={containerRef}
+          tabIndex={root ? undefined : 0}
+          className={root ? className : scrollRegionClassName(className)}
+        >
           {children}
         </div>
       </SmoothScrollContext.Provider>
@@ -211,7 +227,8 @@ export function SmoothScroll({
     <SmoothScrollContext.Provider value={api}>
       <ReactLenis
         root={root}
-        className={className}
+        tabIndex={root ? undefined : 0}
+        className={root ? className : scrollRegionClassName(className)}
         options={{
           lerp,
           duration,

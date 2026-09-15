@@ -449,6 +449,8 @@ export function PullToRefresh({
       aria-busy={isRefreshing}
       data-state={status}
       data-disabled={disabled || undefined}
+      // biome-ignore lint/a11y/noNoninteractiveTabindex: a scroll region needs a tab stop, or keyboard users cannot scroll it (axe scrollable-region-focusable)
+      tabIndex={0}
       onPointerDown={startPointerPull}
       onPointerMove={movePointerPull}
       onPointerUp={(event) => {
@@ -458,7 +460,7 @@ export function PullToRefresh({
         if (gestureRef.current.pointerId === event.pointerId) finishPull();
       }}
       className={cn(
-        "relative w-full overflow-y-auto overscroll-contain bg-background",
+        "relative w-full overflow-y-auto overscroll-contain bg-background outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
         // No `touch-none` here — this element is the scroller, and the pull
         // only takes over once the content is already at the top. The callout
         // has to be off from the first frame though: iOS decides on it while
