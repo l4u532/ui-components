@@ -18,11 +18,16 @@ export function sanitizeAmount(v: string) {
   return `${parts[0]}.${parts.slice(1).join("")}`;
 }
 
-export function formatAmount(n: number, max = 6) {
+// Fixed locale: the widget renders on the server too, and a runtime locale
+// that differs from the server's (de-DE vs en-US) makes React discard the
+// server markup on hydration.
+export const SWAP_LOCALE = "en-US";
+
+export function formatAmount(n: number, max = 6, locale = SWAP_LOCALE) {
   if (!Number.isFinite(n)) return "0";
   if (n === 0) return "0";
   if (n >= 1000) {
-    return n.toLocaleString(undefined, { maximumFractionDigits: 2 });
+    return n.toLocaleString(locale, { maximumFractionDigits: 2 });
   }
-  return n.toLocaleString(undefined, { maximumFractionDigits: max });
+  return n.toLocaleString(locale, { maximumFractionDigits: max });
 }

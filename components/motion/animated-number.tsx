@@ -8,6 +8,12 @@ import { cn } from "@/lib/utils";
 export interface AnimatedNumberProps {
   value: number;
   duration?: number;
+  /**
+   * BCP 47 tag for the default formatter. Fixed rather than the runtime
+   * locale so server and client render the same text (a de-DE browser
+   * otherwise hydrates "48,273" against a server-rendered "48.273").
+   */
+  locale?: string;
   format?: (n: number) => string;
   className?: string;
   startOnView?: boolean;
@@ -16,7 +22,8 @@ export interface AnimatedNumberProps {
 export function AnimatedNumber({
   value,
   duration = 1.2,
-  format = (n) => Math.round(n).toLocaleString(),
+  locale = "en-US",
+  format = (n) => Math.round(n).toLocaleString(locale),
   className,
   startOnView = true,
 }: AnimatedNumberProps) {

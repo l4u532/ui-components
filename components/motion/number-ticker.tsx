@@ -21,8 +21,12 @@ export interface NumberTickerProps {
   blur?: boolean;
   className?: string;
   digitClassName?: string;
-  /** Insert locale group separators (commas). Server-component safe. */
-  locale?: boolean;
+  /**
+   * Insert group separators. `true` formats as en-US; pass a BCP 47 tag for
+   * another locale. Always an explicit locale, never the runtime one, so
+   * server and client render the same text. Server-component safe.
+   */
+  locale?: boolean | string;
   /** Custom formatter. Client-only — server components must use `locale` instead. */
   format?: (value: number) => string;
 }
@@ -57,7 +61,7 @@ export function NumberTicker({
     const formatted = format
       ? format(rounded)
       : locale
-        ? rounded.toLocaleString()
+        ? rounded.toLocaleString(locale === true ? "en-US" : locale)
         : rounded.toString();
     return pad ? formatted.padStart(pad, "0") : formatted;
   }, [value, pad, format, locale]);
