@@ -1,0 +1,245 @@
+{
+  "subject": "fix: give the morphing modal dialog semantics, Escape and focus hand-back",
+  "capturedAt": "2026-09-21T11:47:41.356Z",
+  "page": "/components/motion/morphing-modal",
+  "trigger": "Open wallet options",
+  "defect": "The morphing modal rendered a plain <div> panel: no role=\"dialog\", no aria-modal, no accessible name, no Escape handler and no focus management. Escape did nothing, and closing it left document.activeElement on <body> in both browsers.",
+  "method": "Per browser and build, two paths. Mouse: click the trigger with no prior focus call. Keyboard: focus the trigger with window.__audit.focusAt() and press Enter. While open, record whether an element with role=\"dialog\" and aria-modal=\"true\" is present, its aria-label, and document.activeElement. Then press Escape and poll every 100 ms for up to 1200 ms for the panel disappearing or going pointer-events: none. If Escape does nothing, close with the demo's own close control (aria-label \"Close\"). Finally record document.activeElement again.",
+  "environment": {
+    "machine": "macOS 26.6.2",
+    "chrome": {
+      "version": "153.0.8010.50",
+      "driver": "Playwright, chromium.launch({ channel: \"chrome\", headless: false })",
+      "viewport": "1440x900"
+    },
+    "safari": {
+      "version": "26.6.2",
+      "driver": "safaridriver (W3C WebDriver) on port 4491",
+      "viewport": "1440x900"
+    }
+  },
+  "builds": {
+    "before": {
+      "label": "upstream main",
+      "origin": "http://localhost:3300",
+      "servedFrom": "wt/upstream-main"
+    },
+    "after": {
+      "label": "PR branch fix/morphing-modal-dialog",
+      "origin": "http://localhost:3302",
+      "servedFrom": "wt/morphing-modal-dialog"
+    }
+  },
+  "caveats": [
+    "The accessible name after the fix is the component's default, \"Dialog\": the demo does not pass the new ariaLabel prop.",
+    "Before the fix the modal cannot be closed with the keyboard at all, so the \"before\" runs close with the demo's own ✕ control. That control unmounts with the panel, which is part of why focus ends on <body>."
+  ],
+  "browsers": {
+    "chrome": {
+      "before": {
+        "url": "http://localhost:3300/components/motion/morphing-modal",
+        "capture": "morphing-modal-chrome-before.txt",
+        "mouse": {
+          "roleDialogAriaModal": false,
+          "dialogAriaLabel": null,
+          "activeElementWhileOpen": "button \"Open wallet options\"",
+          "escapeClosed": false,
+          "escapeClosedWithinMs": null,
+          "closedBy": "clicked the demo close control (aria-label \"Close\")",
+          "modalGoneAtEnd": true,
+          "activeElementAfterClose": {
+            "tag": "BODY",
+            "ariaLabel": null,
+            "text": "{\"@context\":\"https://schema.org\",\"@type\"",
+            "describedAs": "body",
+            "isBody": true,
+            "isTrigger": false
+          },
+          "layersWhileOpen": [
+            "button[aria-label=\"Close modal\"]",
+            "div \"Options✕View Private KeyView Recovery Ph\""
+          ],
+          "screenshots": null
+        },
+        "keyboard": {
+          "roleDialogAriaModal": false,
+          "dialogAriaLabel": null,
+          "activeElementWhileOpen": "button \"Open wallet options\"",
+          "escapeClosed": false,
+          "escapeClosedWithinMs": null,
+          "closedBy": "clicked the demo close control (aria-label \"Close\")",
+          "modalGoneAtEnd": true,
+          "activeElementAfterClose": {
+            "tag": "BODY",
+            "ariaLabel": null,
+            "text": "{\"@context\":\"https://schema.org\",\"@type\"",
+            "describedAs": "body",
+            "isBody": true,
+            "isTrigger": false
+          },
+          "layersWhileOpen": [
+            "button[aria-label=\"Close modal\"]",
+            "div \"Options✕View Private KeyView Recovery Ph\""
+          ],
+          "screenshots": null
+        }
+      },
+      "after": {
+        "url": "http://localhost:3302/components/motion/morphing-modal",
+        "capture": "morphing-modal-chrome-after.txt",
+        "mouse": {
+          "roleDialogAriaModal": true,
+          "dialogAriaLabel": "Dialog",
+          "activeElementWhileOpen": "div[role=dialog][aria-label=\"Dialog\"] \"Options✕View Private KeyView Recovery Ph\"",
+          "escapeClosed": true,
+          "escapeClosedWithinMs": 100,
+          "closedBy": "Escape",
+          "modalGoneAtEnd": true,
+          "activeElementAfterClose": {
+            "tag": "BUTTON",
+            "ariaLabel": null,
+            "text": "Open wallet options",
+            "describedAs": "button \"Open wallet options\"",
+            "isBody": false,
+            "isTrigger": true
+          },
+          "layersWhileOpen": [
+            "button[aria-label=\"Close modal\"]",
+            "div \"Options✕View Private KeyView Recovery Ph\"",
+            "div[role=dialog][aria-label=\"Dialog\"] \"Options✕View Private KeyView Recovery Ph\""
+          ],
+          "screenshots": null
+        },
+        "keyboard": {
+          "roleDialogAriaModal": true,
+          "dialogAriaLabel": "Dialog",
+          "activeElementWhileOpen": "div[role=dialog][aria-label=\"Dialog\"] \"Options✕View Private KeyView Recovery Ph\"",
+          "escapeClosed": true,
+          "escapeClosedWithinMs": 100,
+          "closedBy": "Escape",
+          "modalGoneAtEnd": true,
+          "activeElementAfterClose": {
+            "tag": "BUTTON",
+            "ariaLabel": null,
+            "text": "Open wallet options",
+            "describedAs": "button \"Open wallet options\"",
+            "isBody": false,
+            "isTrigger": true
+          },
+          "layersWhileOpen": [
+            "button[aria-label=\"Close modal\"]",
+            "div \"Options✕View Private KeyView Recovery Ph\"",
+            "div[role=dialog][aria-label=\"Dialog\"] \"Options✕View Private KeyView Recovery Ph\""
+          ],
+          "screenshots": null
+        }
+      }
+    },
+    "safari": {
+      "before": {
+        "url": "http://localhost:3300/components/motion/morphing-modal",
+        "capture": "morphing-modal-safari-before.txt",
+        "mouse": {
+          "roleDialogAriaModal": false,
+          "dialogAriaLabel": null,
+          "activeElementWhileOpen": "body",
+          "escapeClosed": false,
+          "escapeClosedWithinMs": null,
+          "closedBy": "clicked the demo close control (aria-label \"Close\")",
+          "modalGoneAtEnd": true,
+          "activeElementAfterClose": {
+            "tag": "BODY",
+            "ariaLabel": null,
+            "text": "{\"@context\":\"https://schema.org\",\"@type\"",
+            "describedAs": "body",
+            "isBody": true,
+            "isTrigger": false
+          },
+          "layersWhileOpen": [
+            "button[aria-label=\"Close modal\"]",
+            "div \"Options✕View Private KeyView Recovery Ph\""
+          ],
+          "screenshots": {
+            "open": "morphing-modal-safari-before-open.png",
+            "closed": "morphing-modal-safari-before-closed.png"
+          }
+        },
+        "keyboard": {
+          "roleDialogAriaModal": false,
+          "dialogAriaLabel": null,
+          "activeElementWhileOpen": "button \"Open wallet options\"",
+          "escapeClosed": false,
+          "escapeClosedWithinMs": null,
+          "closedBy": "clicked the demo close control (aria-label \"Close\")",
+          "modalGoneAtEnd": true,
+          "activeElementAfterClose": {
+            "tag": "BODY",
+            "ariaLabel": null,
+            "text": "{\"@context\":\"https://schema.org\",\"@type\"",
+            "describedAs": "body",
+            "isBody": true,
+            "isTrigger": false
+          },
+          "layersWhileOpen": [
+            "button[aria-label=\"Close modal\"]",
+            "div \"Options✕View Private KeyView Recovery Ph\""
+          ],
+          "screenshots": null
+        }
+      },
+      "after": {
+        "url": "http://localhost:3302/components/motion/morphing-modal",
+        "capture": "morphing-modal-safari-after.txt",
+        "mouse": {
+          "roleDialogAriaModal": true,
+          "dialogAriaLabel": "Dialog",
+          "activeElementWhileOpen": "div[role=dialog][aria-label=\"Dialog\"] \"Options✕View Private KeyView Recovery Ph\"",
+          "escapeClosed": true,
+          "escapeClosedWithinMs": 100,
+          "closedBy": "Escape",
+          "modalGoneAtEnd": true,
+          "activeElementAfterClose": {
+            "tag": "BUTTON",
+            "ariaLabel": null,
+            "text": "Open wallet options",
+            "describedAs": "button \"Open wallet options\"",
+            "isBody": false,
+            "isTrigger": true
+          },
+          "layersWhileOpen": [
+            "button[aria-label=\"Close modal\"]",
+            "div \"Options✕View Private KeyView Recovery Ph\"",
+            "div[role=dialog][aria-label=\"Dialog\"] \"Options✕View Private KeyView Recovery Ph\""
+          ],
+          "screenshots": {
+            "open": "morphing-modal-safari-after-open.png",
+            "closed": "morphing-modal-safari-after-closed.png"
+          }
+        },
+        "keyboard": {
+          "roleDialogAriaModal": true,
+          "dialogAriaLabel": "Dialog",
+          "activeElementWhileOpen": "div[role=dialog][aria-label=\"Dialog\"] \"Options✕View Private KeyView Recovery Ph\"",
+          "escapeClosed": true,
+          "escapeClosedWithinMs": 100,
+          "closedBy": "Escape",
+          "modalGoneAtEnd": true,
+          "activeElementAfterClose": {
+            "tag": "BUTTON",
+            "ariaLabel": null,
+            "text": "Open wallet options",
+            "describedAs": "button \"Open wallet options\"",
+            "isBody": false,
+            "isTrigger": true
+          },
+          "layersWhileOpen": [
+            "button[aria-label=\"Close modal\"]",
+            "div \"Options✕View Private KeyView Recovery Ph\"",
+            "div[role=dialog][aria-label=\"Dialog\"] \"Options✕View Private KeyView Recovery Ph\""
+          ],
+          "screenshots": null
+        }
+      }
+    }
+  }
+}

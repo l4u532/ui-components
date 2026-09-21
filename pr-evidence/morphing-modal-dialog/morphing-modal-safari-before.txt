@@ -1,0 +1,34 @@
+component: Morphing modal
+page: /components/motion/morphing-modal   preview root: #preview   trigger: "Open wallet options"
+variant: before (upstream main)
+url: http://localhost:3300/components/motion/morphing-modal
+browser: Safari 26.6.2 on macOS 26.6.2, driven by safaridriver (W3C WebDriver, port 4491)
+viewport: 1440x900
+
+path 1 - mouse (click the trigger with no prior focus call):
+  trigger: button "Open wallet options"
+  no prior focus call (mouse click only)
+  role="dialog" + aria-modal="true" present: NO
+  dialog aria-label: (none)
+  layers while open: button[aria-label="Close modal"] | div "Options✕View Private KeyView Recovery Ph"
+  activeElement while open: body
+  Escape closed the modal: NO - Escape did nothing (panel still present and interactive after 1200 ms)
+  closed instead by: clicked the demo close control (aria-label "Close")
+  modal gone at the end: yes
+  activeElement after close: body
+  -> FOCUS LOST (BODY)
+
+path 2 - keyboard (focus the trigger with window.__audit.focusAt, then Enter):
+  trigger: button "Open wallet options"
+  focusAt(): button.inline-flex.h-10.items-center "Open wallet options" -> activeElement button "Open wallet options"
+  role="dialog" + aria-modal="true" present: NO
+  dialog aria-label: (none)
+  layers while open: button[aria-label="Close modal"] | div "Options✕View Private KeyView Recovery Ph"
+  activeElement while open: button "Open wallet options"
+  Escape closed the modal: NO - Escape did nothing (panel still present and interactive after 1200 ms)
+  closed instead by: clicked the demo close control (aria-label "Close")
+  modal gone at the end: yes
+  activeElement after close: body
+  -> FOCUS LOST (BODY)
+
+screenshots (mouse path): morphing-modal-safari-before-open.png (open), morphing-modal-safari-before-closed.png (after close)

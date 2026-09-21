@@ -1,0 +1,32 @@
+component: Morphing modal
+page: /components/motion/morphing-modal   preview root: #preview   trigger: "Open wallet options"
+variant: after (PR branch fix/morphing-modal-dialog)
+url: http://localhost:3302/components/motion/morphing-modal
+browser: Safari 26.6.2 on macOS 26.6.2, driven by safaridriver (W3C WebDriver, port 4491)
+viewport: 1440x900
+
+path 1 - mouse (click the trigger with no prior focus call):
+  trigger: button "Open wallet options"
+  no prior focus call (mouse click only)
+  role="dialog" + aria-modal="true" present: yes
+  dialog aria-label: "Dialog"
+  layers while open: button[aria-label="Close modal"] | div "Options✕View Private KeyView Recovery Ph" | div[role=dialog][aria-label="Dialog"] "Options✕View Private KeyView Recovery Ph"
+  activeElement while open: div[role=dialog][aria-label="Dialog"] "Options✕View Private KeyView Recovery Ph"
+  Escape closed the modal: yes, within 100 ms
+  modal gone at the end: yes
+  activeElement after close: button "Open wallet options"
+  -> FOCUS RETURNED TO THE TRIGGER
+
+path 2 - keyboard (focus the trigger with window.__audit.focusAt, then Enter):
+  trigger: button "Open wallet options"
+  focusAt(): button.inline-flex.h-10.items-center "Open wallet options" -> activeElement button "Open wallet options"
+  role="dialog" + aria-modal="true" present: yes
+  dialog aria-label: "Dialog"
+  layers while open: button[aria-label="Close modal"] | div "Options✕View Private KeyView Recovery Ph" | div[role=dialog][aria-label="Dialog"] "Options✕View Private KeyView Recovery Ph"
+  activeElement while open: div[role=dialog][aria-label="Dialog"] "Options✕View Private KeyView Recovery Ph"
+  Escape closed the modal: yes, within 100 ms
+  modal gone at the end: yes
+  activeElement after close: button "Open wallet options"
+  -> FOCUS RETURNED TO THE TRIGGER
+
+screenshots (mouse path): morphing-modal-safari-after-open.png (open), morphing-modal-safari-after-closed.png (after close)
