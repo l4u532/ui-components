@@ -1,0 +1,14 @@
+page: /components/blocks/wallet-card
+url: http://localhost:3303/components/blocks/wallet-card
+variant: after (PR branch)
+browser: Chrome 153.0.8010.50 via Playwright (channel "chrome")
+context locale: de-DE   navigator.language: de-DE   Intl default: de-DE
+viewport: 1440x900
+captured: console.error / console.warning / pageerror, from navigation start to 5s after load
+screenshot anchor: preview (scrollY 47)
+grouped numbers rendered in that preview (after settle): 12,480.32
+
+hydration-related messages: 0
+total console errors/warnings + page errors: 0
+
+(no console errors, console warnings or page errors)

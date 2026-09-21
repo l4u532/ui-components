@@ -1,0 +1,14 @@
+page: /components/motion/number
+url: http://localhost:3300/components/motion/number
+variant: before (upstream main)
+browser: Chrome 153.0.8010.50 via Playwright (channel "chrome")
+context locale: de-DE   navigator.language: de-DE   Intl default: de-DE
+viewport: 1440x900
+captured: console.error / console.warning / pageerror, from navigation start to 5s after load
+screenshot anchor: ticker-preview (scrollY 1550)
+grouped numbers rendered in that preview (after settle): (none found)
+
+hydration-related messages: 1
+total console errors/warnings + page errors: 1
+
+[1] pageerror: Minified React error #418; visit https://react.dev/errors/418?args[]=text&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.

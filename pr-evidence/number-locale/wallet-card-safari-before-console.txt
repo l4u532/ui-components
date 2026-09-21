@@ -1,0 +1,18 @@
+page: /components/blocks/wallet-card
+url: http://localhost:3300/components/blocks/wallet-card
+variant: before (upstream main)
+browser: Safari 26.6.2 on macOS 26.6.2, driven by safaridriver (WebDriver)
+locale: macOS system locale de_DE   navigator.language: de-DE   Intl default: de-DE
+viewport: 1440x900   document.visibilityState: visible
+capture: Safari does not expose the console over WebDriver, so an in-page wrapper around
+  console.error / console.warn / window onerror / unhandledrejection is installed as early as
+  the protocol allows: the session uses pageLoadStrategy "none", so navigation returns at once
+  and the wrapper is injected mid-load, at +75ms wall clock (installed@55).
+  Installed after the normal load event (~+280ms) the wrapper misses this error entirely.
+screenshot anchor: preview (scrollY 46)
+grouped numbers rendered in that preview (after settle): 12.480,32
+
+hydration-related messages: 1
+total captured errors/warnings: 1
+
+[1] uncaught error: Error: Minified React error #418; visit https://react.dev/errors/418?args[]=text&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.

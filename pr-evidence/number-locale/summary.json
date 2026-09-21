@@ -1,0 +1,265 @@
+{
+  "subject": "fix: format library numbers in an explicit locale",
+  "capturedAt": "2026-09-21T11:31:39.603Z",
+  "defect": "Library and preview code called toLocaleString() with no locale, so the server (en-US) and a de-DE browser produced different digit grouping and React logged a hydration mismatch (minified React error #418).",
+  "environment": {
+    "machine": "macOS 26.6.2",
+    "systemLocale": "de_DE",
+    "chrome": {
+      "version": "153.0.8010.50",
+      "driver": "Playwright 1.63.0, chromium.launch({ channel: \"chrome\" })",
+      "locale": "newContext({ locale: \"de-DE\" })",
+      "viewport": "1440x900",
+      "capture": "page.on(\"console\") (error + warning) and page.on(\"pageerror\")"
+    },
+    "safari": {
+      "version": "26.6.2",
+      "driver": "safaridriver (W3C WebDriver) on port 4490",
+      "locale": "macOS system locale de_DE; navigator.language de-DE",
+      "viewport": "1440x900",
+      "capture": "Safari exposes no console over WebDriver. The session uses pageLoadStrategy \"none\" and an in-page wrapper around console.error/console.warn/onerror/unhandledrejection is injected mid-load (32-113 ms after navigation). Installed after the load event (~280 ms) it misses the hydration error entirely."
+    }
+  },
+  "builds": {
+    "before": {
+      "label": "upstream main",
+      "origin": "http://localhost:3300",
+      "servedFrom": "wt/upstream-main"
+    },
+    "after": {
+      "label": "PR branch",
+      "origin": "http://localhost:3303",
+      "servedFrom": "wt/number-locale"
+    }
+  },
+  "pages": [
+    {
+      "page": "swap",
+      "title": "Swap",
+      "path": "/components/blocks/swap",
+      "browsers": {
+        "chrome": {
+          "before": {
+            "url": "http://localhost:3300/components/blocks/swap",
+            "hydrationErrors": 1,
+            "totalMessages": 1,
+            "firstErrorText": "pageerror: Minified React error #418; visit https://react.dev/errors/418?args[]=text&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+            "groupedNumbersRendered": [
+              "3.142",
+              "1,245"
+            ],
+            "screenshot": "swap-chrome-before.png",
+            "consoleLog": "swap-chrome-before-console.txt"
+          },
+          "after": {
+            "url": "http://localhost:3303/components/blocks/swap",
+            "hydrationErrors": 0,
+            "totalMessages": 0,
+            "firstErrorText": null,
+            "groupedNumbersRendered": [
+              "3,142",
+              "1.245"
+            ],
+            "screenshot": "swap-chrome-after.png",
+            "consoleLog": "swap-chrome-after-console.txt"
+          }
+        },
+        "safari": {
+          "before": {
+            "url": "http://localhost:3300/components/blocks/swap",
+            "hydrationErrors": 1,
+            "totalMessages": 1,
+            "firstErrorText": "uncaught error: Error: Minified React error #418; visit https://react.dev/errors/418?args[]=text&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+            "groupedNumbersRendered": [
+              "3.142",
+              "1,245"
+            ],
+            "screenshot": "swap-safari-before.png",
+            "consoleLog": "swap-safari-before-console.txt",
+            "captureInstalledAtMs": 32
+          },
+          "after": {
+            "url": "http://localhost:3303/components/blocks/swap",
+            "hydrationErrors": 0,
+            "totalMessages": 0,
+            "firstErrorText": null,
+            "groupedNumbersRendered": [
+              "3,142",
+              "1.245"
+            ],
+            "screenshot": "swap-safari-after.png",
+            "consoleLog": "swap-safari-after-console.txt",
+            "captureInstalledAtMs": 55
+          }
+        }
+      }
+    },
+    {
+      "page": "wallet-card",
+      "title": "Wallet Card",
+      "path": "/components/blocks/wallet-card",
+      "browsers": {
+        "chrome": {
+          "before": {
+            "url": "http://localhost:3300/components/blocks/wallet-card",
+            "hydrationErrors": 1,
+            "totalMessages": 1,
+            "firstErrorText": "pageerror: Minified React error #418; visit https://react.dev/errors/418?args[]=text&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+            "groupedNumbersRendered": [
+              "12.480,32"
+            ],
+            "screenshot": "wallet-card-chrome-before.png",
+            "consoleLog": "wallet-card-chrome-before-console.txt"
+          },
+          "after": {
+            "url": "http://localhost:3303/components/blocks/wallet-card",
+            "hydrationErrors": 0,
+            "totalMessages": 0,
+            "firstErrorText": null,
+            "groupedNumbersRendered": [
+              "12,480.32"
+            ],
+            "screenshot": "wallet-card-chrome-after.png",
+            "consoleLog": "wallet-card-chrome-after-console.txt"
+          }
+        },
+        "safari": {
+          "before": {
+            "url": "http://localhost:3300/components/blocks/wallet-card",
+            "hydrationErrors": 1,
+            "totalMessages": 1,
+            "firstErrorText": "uncaught error: Error: Minified React error #418; visit https://react.dev/errors/418?args[]=text&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+            "groupedNumbersRendered": [
+              "12.480,32"
+            ],
+            "screenshot": "wallet-card-safari-before.png",
+            "consoleLog": "wallet-card-safari-before-console.txt",
+            "captureInstalledAtMs": 75
+          },
+          "after": {
+            "url": "http://localhost:3303/components/blocks/wallet-card",
+            "hydrationErrors": 0,
+            "totalMessages": 0,
+            "firstErrorText": null,
+            "groupedNumbersRendered": [
+              "12,480.32"
+            ],
+            "screenshot": "wallet-card-safari-after.png",
+            "consoleLog": "wallet-card-safari-after-console.txt",
+            "captureInstalledAtMs": 51
+          }
+        }
+      }
+    },
+    {
+      "page": "number",
+      "title": "Number Animation",
+      "path": "/components/motion/number",
+      "browsers": {
+        "chrome": {
+          "before": {
+            "url": "http://localhost:3300/components/motion/number",
+            "hydrationErrors": 1,
+            "totalMessages": 1,
+            "firstErrorText": "pageerror: Minified React error #418; visit https://react.dev/errors/418?args[]=text&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+            "groupedNumbersRendered": [],
+            "screenshot": "number-chrome-before.png",
+            "consoleLog": "number-chrome-before-console.txt"
+          },
+          "after": {
+            "url": "http://localhost:3303/components/motion/number",
+            "hydrationErrors": 0,
+            "totalMessages": 0,
+            "firstErrorText": null,
+            "groupedNumbersRendered": [],
+            "screenshot": "number-chrome-after.png",
+            "consoleLog": "number-chrome-after-console.txt"
+          }
+        },
+        "safari": {
+          "before": {
+            "url": "http://localhost:3300/components/motion/number",
+            "hydrationErrors": 1,
+            "totalMessages": 1,
+            "firstErrorText": "uncaught error: Error: Minified React error #418; visit https://react.dev/errors/418?args[]=text&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+            "groupedNumbersRendered": [],
+            "screenshot": "number-safari-before.png",
+            "consoleLog": "number-safari-before-console.txt",
+            "captureInstalledAtMs": 66
+          },
+          "after": {
+            "url": "http://localhost:3303/components/motion/number",
+            "hydrationErrors": 0,
+            "totalMessages": 0,
+            "firstErrorText": null,
+            "groupedNumbersRendered": [],
+            "screenshot": "number-safari-after.png",
+            "consoleLog": "number-safari-after-console.txt",
+            "captureInstalledAtMs": 42
+          }
+        }
+      }
+    },
+    {
+      "page": "table",
+      "title": "Table",
+      "path": "/components/motion/table",
+      "browsers": {
+        "chrome": {
+          "before": {
+            "url": "http://localhost:3300/components/motion/table",
+            "hydrationErrors": 1,
+            "totalMessages": 1,
+            "firstErrorText": "pageerror: Minified React error #418; visit https://react.dev/errors/418?args[]=text&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+            "groupedNumbersRendered": [
+              "10.000"
+            ],
+            "screenshot": "table-chrome-before.png",
+            "consoleLog": "table-chrome-before-console.txt"
+          },
+          "after": {
+            "url": "http://localhost:3303/components/motion/table",
+            "hydrationErrors": 0,
+            "totalMessages": 0,
+            "firstErrorText": null,
+            "groupedNumbersRendered": [
+              "10,000"
+            ],
+            "screenshot": "table-chrome-after.png",
+            "consoleLog": "table-chrome-after-console.txt"
+          }
+        },
+        "safari": {
+          "before": {
+            "url": "http://localhost:3300/components/motion/table",
+            "hydrationErrors": 1,
+            "totalMessages": 1,
+            "firstErrorText": "uncaught error: Error: Minified React error #418; visit https://react.dev/errors/418?args[]=text&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+            "groupedNumbersRendered": [
+              "10.000"
+            ],
+            "screenshot": "table-safari-before.png",
+            "consoleLog": "table-safari-before-console.txt",
+            "captureInstalledAtMs": 113
+          },
+          "after": {
+            "url": "http://localhost:3303/components/motion/table",
+            "hydrationErrors": 0,
+            "totalMessages": 0,
+            "firstErrorText": null,
+            "groupedNumbersRendered": [
+              "10,000"
+            ],
+            "screenshot": "table-safari-after.png",
+            "consoleLog": "table-safari-after-console.txt",
+            "captureInstalledAtMs": 75
+          }
+        }
+      }
+    }
+  ],
+  "totals": {
+    "hydrationErrorsBefore": 8,
+    "hydrationErrorsAfter": 0
+  }
+}
