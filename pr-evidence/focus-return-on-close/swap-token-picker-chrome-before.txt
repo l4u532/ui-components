@@ -1,0 +1,26 @@
+overlay: Swap token picker
+page: /components/blocks/swap   preview root: #preview
+variant: before (upstream main)
+url: http://localhost:3300/components/blocks/swap
+browser: Chrome 153.0.8010.50 via Playwright (channel "chrome", headed)
+viewport: 1440x900
+
+path 1 - mouse (click the trigger with no prior focus call, wait, press Escape):
+  trigger: button "ETΞETH"
+  no prior focus call; activeElement before the click: body
+  overlay opened: yes (div[role=dialog][aria-label="Select from token"] "AllΞ◎BAOPBAMost popularETΞETHWEΞWETHUSΞU")
+  activeElement while open: input
+  Escape closed the overlay: yes
+  activeElement after close: body
+  -> FOCUS LOST (BODY)
+
+path 2 - keyboard (focus the trigger with window.__audit.focusAt, press Enter, wait, press Escape):
+  trigger: button "ETΞETH"
+  focusAt(): button.group.inline-flex.h-10 "ETΞETH" -> activeElement button "ETΞETH"
+  overlay opened: yes (div[role=dialog][aria-label="Select from token"] "AllΞ◎BAOPBAMost popularETΞETHWEΞWETHUSΞU")
+  activeElement while open: input
+  Escape closed the overlay: yes
+  activeElement after close: body
+  -> FOCUS LOST (BODY)
+
+(screenshots for this topic are taken in Safari only)

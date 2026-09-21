@@ -1,0 +1,1186 @@
+{
+  "subject": "fix: hand focus back when overlays close",
+  "capturedAt": "2026-09-21T11:44:43.336Z",
+  "defect": "Overlays (bottom sheet, command palette, select, morph select, the attachment image preview and the swap token picker) took focus, or let it fall away, and never handed it back when they closed. WebKit does not focus a button on click, so in Safari focus ended on <body> after a mouse-opened overlay closed; in Chrome the overlays that moved focus into themselves stranded it on <body> on both paths.",
+  "method": "Per overlay, per browser, per build, two paths. Mouse: click the trigger with no prior focus call, wait for the overlay, press Escape, wait, read document.activeElement. Keyboard: focus the trigger through window.__audit.focusAt(), press Enter, wait, press Escape, wait, read document.activeElement. Every path starts from a fresh page load; the preview is scrolled so its top sits 96 px below the viewport top.",
+  "environment": {
+    "machine": "macOS 26.6.2",
+    "chrome": {
+      "version": "153.0.8010.50",
+      "driver": "Playwright, chromium.launch({ channel: \"chrome\", headless: false })",
+      "viewport": "1440x900"
+    },
+    "safari": {
+      "version": "26.6.2",
+      "driver": "safaridriver (W3C WebDriver) on port 4491",
+      "viewport": "1440x900"
+    }
+  },
+  "builds": {
+    "before": {
+      "label": "upstream main",
+      "origin": "http://localhost:3300",
+      "servedFrom": "wt/upstream-main"
+    },
+    "after": {
+      "label": "PR branch fix/focus-return-on-close",
+      "origin": "http://localhost:3301",
+      "servedFrom": "wt/focus-return-on-close"
+    }
+  },
+  "knownLimitation": "The bottom-sheet and command-palette demos open from plain consumer-owned onClick triggers that the library never sees, so there is nothing for the component to capture when WebKit leaves the click unfocused. On the mouse path in Safari both still end on <body> after the fix; their keyboard path returns to the trigger.",
+  "overlays": [
+    {
+      "overlay": "bottom-sheet",
+      "title": "Bottom sheet",
+      "path": "/components/motion/bottom-sheet",
+      "previewRoot": "#preview",
+      "trigger": "button \"Open bottom sheet\"",
+      "browsers": {
+        "chrome": {
+          "before": {
+            "url": "http://localhost:3300/components/motion/bottom-sheet",
+            "mouse": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": null,
+                "ariaLabel": null,
+                "text": "Open bottom sheet",
+                "describedAs": "button \"Open bottom sheet\"",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "button \"Open bottom sheet\"",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "button[aria-label=\"Close bottom sheet\"]",
+                "div[role=dialog] \"Quick actionsDrag the handle, fling, or \""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": null
+            },
+            "keyboard": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": null,
+                "ariaLabel": null,
+                "text": "Open bottom sheet",
+                "describedAs": "button \"Open bottom sheet\"",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "button \"Open bottom sheet\"",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "button[aria-label=\"Close bottom sheet\"]",
+                "div[role=dialog] \"Quick actionsDrag the handle, fling, or \""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": "button.inline-flex.h-10.items-center \"Open bottom sheet\""
+            },
+            "capture": "bottom-sheet-chrome-before.txt",
+            "screenshot": null
+          },
+          "after": {
+            "url": "http://localhost:3301/components/motion/bottom-sheet",
+            "mouse": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": null,
+                "ariaLabel": null,
+                "text": "Open bottom sheet",
+                "describedAs": "button \"Open bottom sheet\"",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "div[role=dialog] \"Quick actionsDrag the handle, fling, or \"",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "button[aria-label=\"Close bottom sheet\"]",
+                "div[role=dialog] \"Quick actionsDrag the handle, fling, or \""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": null
+            },
+            "keyboard": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": null,
+                "ariaLabel": null,
+                "text": "Open bottom sheet",
+                "describedAs": "button \"Open bottom sheet\"",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "div[role=dialog] \"Quick actionsDrag the handle, fling, or \"",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "button[aria-label=\"Close bottom sheet\"]",
+                "div[role=dialog] \"Quick actionsDrag the handle, fling, or \""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": "button.inline-flex.h-10.items-center \"Open bottom sheet\""
+            },
+            "capture": "bottom-sheet-chrome-after.txt",
+            "screenshot": null
+          }
+        },
+        "safari": {
+          "before": {
+            "url": "http://localhost:3300/components/motion/bottom-sheet",
+            "mouse": {
+              "outcome": "body",
+              "activeElementAfterClose": {
+                "tag": "BODY",
+                "id": null,
+                "ariaLabel": null,
+                "text": "{\"@context\":\"https://schema.org\",\"@type\"",
+                "describedAs": "body",
+                "isBody": true,
+                "isTrigger": false
+              },
+              "activeElementWhileOpen": "body",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "button[aria-label=\"Close bottom sheet\"]",
+                "div[role=dialog] \"Quick actionsDrag the handle, fling, or \""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": null
+            },
+            "keyboard": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": null,
+                "ariaLabel": null,
+                "text": "Open bottom sheet",
+                "describedAs": "button \"Open bottom sheet\"",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "button \"Open bottom sheet\"",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "button[aria-label=\"Close bottom sheet\"]",
+                "div[role=dialog] \"Quick actionsDrag the handle, fling, or \""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": "button.inline-flex.h-10.items-center \"Open bottom sheet\""
+            },
+            "capture": "bottom-sheet-safari-before.txt",
+            "screenshot": "bottom-sheet-safari-before.png"
+          },
+          "after": {
+            "url": "http://localhost:3301/components/motion/bottom-sheet",
+            "mouse": {
+              "outcome": "body",
+              "activeElementAfterClose": {
+                "tag": "BODY",
+                "id": null,
+                "ariaLabel": null,
+                "text": "{\"@context\":\"https://schema.org\",\"@type\"",
+                "describedAs": "body",
+                "isBody": true,
+                "isTrigger": false
+              },
+              "activeElementWhileOpen": "div[role=dialog] \"Quick actionsDrag the handle, fling, or \"",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "button[aria-label=\"Close bottom sheet\"]",
+                "div[role=dialog] \"Quick actionsDrag the handle, fling, or \""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": null
+            },
+            "keyboard": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": null,
+                "ariaLabel": null,
+                "text": "Open bottom sheet",
+                "describedAs": "button \"Open bottom sheet\"",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "div[role=dialog] \"Quick actionsDrag the handle, fling, or \"",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "button[aria-label=\"Close bottom sheet\"]",
+                "div[role=dialog] \"Quick actionsDrag the handle, fling, or \""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": "button.inline-flex.h-10.items-center \"Open bottom sheet\""
+            },
+            "capture": "bottom-sheet-safari-after.txt",
+            "screenshot": "bottom-sheet-safari-after.png"
+          }
+        }
+      }
+    },
+    {
+      "overlay": "command-palette",
+      "title": "Command palette",
+      "path": "/components/blocks/command-palette",
+      "previewRoot": "#preview",
+      "trigger": "button \"Open command palette\"",
+      "browsers": {
+        "chrome": {
+          "before": {
+            "url": "http://localhost:3300/components/blocks/command-palette",
+            "mouse": {
+              "outcome": "body",
+              "activeElementAfterClose": {
+                "tag": "BODY",
+                "id": null,
+                "ariaLabel": null,
+                "text": "{\"@context\":\"https://schema.org\",\"@type\"",
+                "describedAs": "body",
+                "isBody": true,
+                "isTrigger": false
+              },
+              "activeElementWhileOpen": "input[role=combobox]",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "button[aria-label=\"Close command palette\"]",
+                "div \"ESCNavigationGo to HomeG HOpen profileG \"",
+                "div[role=dialog][aria-label=\"Command palette\"] \"ESCNavigationGo to HomeG HOpen profileG \"",
+                "div#_R_t5cdbsnpfiv9qlb_-list[role=listbox][aria-label=\"Commands\"] \"NavigationGo to HomeG HOpen profileG PSe\""
+              ],
+              "escapeClosedOverlay": false,
+              "triggerFocusedFirst": null
+            },
+            "keyboard": {
+              "outcome": "body",
+              "activeElementAfterClose": {
+                "tag": "BODY",
+                "id": null,
+                "ariaLabel": null,
+                "text": "{\"@context\":\"https://schema.org\",\"@type\"",
+                "describedAs": "body",
+                "isBody": true,
+                "isTrigger": false
+              },
+              "activeElementWhileOpen": "input[role=combobox]",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "button[aria-label=\"Close command palette\"]",
+                "div \"ESCNavigationGo to HomeG HOpen profileG \"",
+                "div[role=dialog][aria-label=\"Command palette\"] \"ESCNavigationGo to HomeG HOpen profileG \"",
+                "div#_R_t5cdbsnpfiv9qlb_-list[role=listbox][aria-label=\"Commands\"] \"NavigationGo to HomeG HOpen profileG PSe\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": "button.inline-flex.h-10.items-center \"Open command palette\""
+            },
+            "capture": "command-palette-chrome-before.txt",
+            "screenshot": null
+          },
+          "after": {
+            "url": "http://localhost:3301/components/blocks/command-palette",
+            "mouse": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": null,
+                "ariaLabel": null,
+                "text": "Open command palette",
+                "describedAs": "button \"Open command palette\"",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "input[role=combobox]",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "button[aria-label=\"Close command palette\"]",
+                "div \"ESCNavigationGo to HomeG HOpen profileG \"",
+                "div[role=dialog][aria-label=\"Command palette\"] \"ESCNavigationGo to HomeG HOpen profileG \"",
+                "div#_R_t5cdbsnpfiv9qlb_-list[role=listbox][aria-label=\"Commands\"] \"NavigationGo to HomeG HOpen profileG PSe\""
+              ],
+              "escapeClosedOverlay": false,
+              "triggerFocusedFirst": null
+            },
+            "keyboard": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": null,
+                "ariaLabel": null,
+                "text": "Open command palette",
+                "describedAs": "button \"Open command palette\"",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "input[role=combobox]",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "button[aria-label=\"Close command palette\"]",
+                "div \"ESCNavigationGo to HomeG HOpen profileG \"",
+                "div[role=dialog][aria-label=\"Command palette\"] \"ESCNavigationGo to HomeG HOpen profileG \"",
+                "div#_R_t5cdbsnpfiv9qlb_-list[role=listbox][aria-label=\"Commands\"] \"NavigationGo to HomeG HOpen profileG PSe\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": "button.inline-flex.h-10.items-center \"Open command palette\""
+            },
+            "capture": "command-palette-chrome-after.txt",
+            "screenshot": null
+          }
+        },
+        "safari": {
+          "before": {
+            "url": "http://localhost:3300/components/blocks/command-palette",
+            "mouse": {
+              "outcome": "body",
+              "activeElementAfterClose": {
+                "tag": "BODY",
+                "id": null,
+                "ariaLabel": null,
+                "text": "{\"@context\":\"https://schema.org\",\"@type\"",
+                "describedAs": "body",
+                "isBody": true,
+                "isTrigger": false
+              },
+              "activeElementWhileOpen": "input[role=combobox]",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "button[aria-label=\"Close command palette\"]",
+                "div \"ESCNavigationGo to HomeG HOpen profileG \"",
+                "div[role=dialog][aria-label=\"Command palette\"] \"ESCNavigationGo to HomeG HOpen profileG \"",
+                "div#_R_t5cdbsnpfiv9qlb_-list[role=listbox][aria-label=\"Commands\"] \"NavigationGo to HomeG HOpen profileG PSe\""
+              ],
+              "escapeClosedOverlay": false,
+              "triggerFocusedFirst": null
+            },
+            "keyboard": {
+              "outcome": "body",
+              "activeElementAfterClose": {
+                "tag": "BODY",
+                "id": null,
+                "ariaLabel": null,
+                "text": "{\"@context\":\"https://schema.org\",\"@type\"",
+                "describedAs": "body",
+                "isBody": true,
+                "isTrigger": false
+              },
+              "activeElementWhileOpen": "input[role=combobox]",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "button[aria-label=\"Close command palette\"]",
+                "div \"ESCNavigationGo to HomeG HOpen profileG \"",
+                "div[role=dialog][aria-label=\"Command palette\"] \"ESCNavigationGo to HomeG HOpen profileG \"",
+                "div#_R_t5cdbsnpfiv9qlb_-list[role=listbox][aria-label=\"Commands\"] \"NavigationGo to HomeG HOpen profileG PSe\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": "button.inline-flex.h-10.items-center \"Open command palette\""
+            },
+            "capture": "command-palette-safari-before.txt",
+            "screenshot": "command-palette-safari-before.png"
+          },
+          "after": {
+            "url": "http://localhost:3301/components/blocks/command-palette",
+            "mouse": {
+              "outcome": "body",
+              "activeElementAfterClose": {
+                "tag": "BODY",
+                "id": null,
+                "ariaLabel": null,
+                "text": "{\"@context\":\"https://schema.org\",\"@type\"",
+                "describedAs": "body",
+                "isBody": true,
+                "isTrigger": false
+              },
+              "activeElementWhileOpen": "input[role=combobox]",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "button[aria-label=\"Close command palette\"]",
+                "div \"ESCNavigationGo to HomeG HOpen profileG \"",
+                "div[role=dialog][aria-label=\"Command palette\"] \"ESCNavigationGo to HomeG HOpen profileG \"",
+                "div#_R_t5cdbsnpfiv9qlb_-list[role=listbox][aria-label=\"Commands\"] \"NavigationGo to HomeG HOpen profileG PSe\""
+              ],
+              "escapeClosedOverlay": false,
+              "triggerFocusedFirst": null
+            },
+            "keyboard": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": null,
+                "ariaLabel": null,
+                "text": "Open command palette",
+                "describedAs": "button \"Open command palette\"",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "input[role=combobox]",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "button[aria-label=\"Close command palette\"]",
+                "div \"ESCNavigationGo to HomeG HOpen profileG \"",
+                "div[role=dialog][aria-label=\"Command palette\"] \"ESCNavigationGo to HomeG HOpen profileG \"",
+                "div#_R_t5cdbsnpfiv9qlb_-list[role=listbox][aria-label=\"Commands\"] \"NavigationGo to HomeG HOpen profileG PSe\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": "button.inline-flex.h-10.items-center \"Open command palette\""
+            },
+            "capture": "command-palette-safari-after.txt",
+            "screenshot": "command-palette-safari-after.png"
+          }
+        }
+      }
+    },
+    {
+      "overlay": "select",
+      "title": "Select",
+      "path": "/components/motion/select",
+      "previewRoot": "#default-preview",
+      "trigger": "button#_R_19aqdbsnpfiv9qlb_-trigger \"Next.js\"",
+      "browsers": {
+        "chrome": {
+          "before": {
+            "url": "http://localhost:3300/components/motion/select",
+            "mouse": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": "_R_19aqdbsnpfiv9qlb_-trigger",
+                "ariaLabel": null,
+                "text": "Next.js",
+                "describedAs": "button#_R_19aqdbsnpfiv9qlb_-trigger \"Next.js\"",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "button#_R_19aqdbsnpfiv9qlb_-trigger \"Next.js\"",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "div#_R_19aqdbsnpfiv9qlb_-list[role=listbox] \"Next.jsRemixAstroVite\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": null
+            },
+            "keyboard": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": "_R_19aqdbsnpfiv9qlb_-trigger",
+                "ariaLabel": null,
+                "text": "Next.js",
+                "describedAs": "button#_R_19aqdbsnpfiv9qlb_-trigger \"Next.js\"",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "button#_R_19aqdbsnpfiv9qlb_-trigger \"Next.js\"",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "div#_R_19aqdbsnpfiv9qlb_-list[role=listbox] \"Next.jsRemixAstroVite\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": "button#_R_19aqdbsnpfiv9qlb_-trigger.relative.z-10.flex \"Next.js\""
+            },
+            "capture": "select-chrome-before.txt",
+            "screenshot": null
+          },
+          "after": {
+            "url": "http://localhost:3301/components/motion/select",
+            "mouse": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": "_R_19aqdbsnpfiv9qlb_-trigger",
+                "ariaLabel": null,
+                "text": "Next.js",
+                "describedAs": "button#_R_19aqdbsnpfiv9qlb_-trigger \"Next.js\"",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "button#_R_19aqdbsnpfiv9qlb_-trigger \"Next.js\"",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "div#_R_19aqdbsnpfiv9qlb_-list[role=listbox] \"Next.jsRemixAstroVite\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": null
+            },
+            "keyboard": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": "_R_19aqdbsnpfiv9qlb_-trigger",
+                "ariaLabel": null,
+                "text": "Next.js",
+                "describedAs": "button#_R_19aqdbsnpfiv9qlb_-trigger \"Next.js\"",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "button#_R_19aqdbsnpfiv9qlb_-trigger \"Next.js\"",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "div#_R_19aqdbsnpfiv9qlb_-list[role=listbox] \"Next.jsRemixAstroVite\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": "button#_R_19aqdbsnpfiv9qlb_-trigger.relative.z-10.flex \"Next.js\""
+            },
+            "capture": "select-chrome-after.txt",
+            "screenshot": null
+          }
+        },
+        "safari": {
+          "before": {
+            "url": "http://localhost:3300/components/motion/select",
+            "mouse": {
+              "outcome": "body",
+              "activeElementAfterClose": {
+                "tag": "BODY",
+                "id": null,
+                "ariaLabel": null,
+                "text": "{\"@context\":\"https://schema.org\",\"@type\"",
+                "describedAs": "body",
+                "isBody": true,
+                "isTrigger": false
+              },
+              "activeElementWhileOpen": "body",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "div#_R_19aqdbsnpfiv9qlb_-list[role=listbox] \"Next.jsRemixAstroVite\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": null
+            },
+            "keyboard": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": "_R_19aqdbsnpfiv9qlb_-trigger",
+                "ariaLabel": null,
+                "text": "Next.js",
+                "describedAs": "button#_R_19aqdbsnpfiv9qlb_-trigger \"Next.js\"",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "button#_R_19aqdbsnpfiv9qlb_-trigger \"Next.js\"",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "div#_R_19aqdbsnpfiv9qlb_-list[role=listbox] \"Next.jsRemixAstroVite\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": "button#_R_19aqdbsnpfiv9qlb_-trigger.relative.z-10.flex \"Next.js\""
+            },
+            "capture": "select-safari-before.txt",
+            "screenshot": "select-safari-before.png"
+          },
+          "after": {
+            "url": "http://localhost:3301/components/motion/select",
+            "mouse": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": "_R_19aqdbsnpfiv9qlb_-trigger",
+                "ariaLabel": null,
+                "text": "Next.js",
+                "describedAs": "button#_R_19aqdbsnpfiv9qlb_-trigger \"Next.js\"",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "body",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "div#_R_19aqdbsnpfiv9qlb_-list[role=listbox] \"Next.jsRemixAstroVite\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": null
+            },
+            "keyboard": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": "_R_19aqdbsnpfiv9qlb_-trigger",
+                "ariaLabel": null,
+                "text": "Next.js",
+                "describedAs": "button#_R_19aqdbsnpfiv9qlb_-trigger \"Next.js\"",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "button#_R_19aqdbsnpfiv9qlb_-trigger \"Next.js\"",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "div#_R_19aqdbsnpfiv9qlb_-list[role=listbox] \"Next.jsRemixAstroVite\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": "button#_R_19aqdbsnpfiv9qlb_-trigger.relative.z-10.flex \"Next.js\""
+            },
+            "capture": "select-safari-after.txt",
+            "screenshot": "select-safari-after.png"
+          }
+        }
+      }
+    },
+    {
+      "overlay": "select-morph",
+      "title": "Morph select",
+      "path": "/components/motion/select",
+      "previewRoot": "#morph-preview",
+      "trigger": "button#_R_19asdbsnpfiv9qlb_-trigger \"Next.js\"",
+      "browsers": {
+        "chrome": {
+          "before": {
+            "url": "http://localhost:3300/components/motion/select",
+            "mouse": {
+              "outcome": "body",
+              "activeElementAfterClose": {
+                "tag": "BODY",
+                "id": null,
+                "ariaLabel": null,
+                "text": "{\"@context\":\"https://schema.org\",\"@type\"",
+                "describedAs": "body",
+                "isBody": true,
+                "isTrigger": false
+              },
+              "activeElementWhileOpen": "body",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "div#_R_19asdbsnpfiv9qlb_-list[role=listbox] \"Next.jsNext.jsRemixAstroVite\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": null
+            },
+            "keyboard": {
+              "outcome": "body",
+              "activeElementAfterClose": {
+                "tag": "BODY",
+                "id": null,
+                "ariaLabel": null,
+                "text": "{\"@context\":\"https://schema.org\",\"@type\"",
+                "describedAs": "body",
+                "isBody": true,
+                "isTrigger": false
+              },
+              "activeElementWhileOpen": "body",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "div#_R_19asdbsnpfiv9qlb_-list[role=listbox] \"Next.jsNext.jsRemixAstroVite\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": "button#_R_19asdbsnpfiv9qlb_-trigger.flex.w-full.items-center \"Next.js\""
+            },
+            "capture": "select-morph-chrome-before.txt",
+            "screenshot": null
+          },
+          "after": {
+            "url": "http://localhost:3301/components/motion/select",
+            "mouse": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": "_R_19asdbsnpfiv9qlb_-trigger",
+                "ariaLabel": null,
+                "text": "Next.js",
+                "describedAs": "button#_R_19asdbsnpfiv9qlb_-trigger \"Next.js\"",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "body",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "div#_R_19asdbsnpfiv9qlb_-list[role=listbox] \"Next.jsNext.jsRemixAstroVite\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": null
+            },
+            "keyboard": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": "_R_19asdbsnpfiv9qlb_-trigger",
+                "ariaLabel": null,
+                "text": "Next.js",
+                "describedAs": "button#_R_19asdbsnpfiv9qlb_-trigger \"Next.js\"",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "body",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "div#_R_19asdbsnpfiv9qlb_-list[role=listbox] \"Next.jsNext.jsRemixAstroVite\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": "button#_R_19asdbsnpfiv9qlb_-trigger.flex.w-full.items-center \"Next.js\""
+            },
+            "capture": "select-morph-chrome-after.txt",
+            "screenshot": null
+          }
+        },
+        "safari": {
+          "before": {
+            "url": "http://localhost:3300/components/motion/select",
+            "mouse": {
+              "outcome": "body",
+              "activeElementAfterClose": {
+                "tag": "BODY",
+                "id": null,
+                "ariaLabel": null,
+                "text": "{\"@context\":\"https://schema.org\",\"@type\"",
+                "describedAs": "body",
+                "isBody": true,
+                "isTrigger": false
+              },
+              "activeElementWhileOpen": "body",
+              "overlayOpened": false,
+              "overlayDescriptions": [],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": null
+            },
+            "keyboard": {
+              "outcome": "body",
+              "activeElementAfterClose": {
+                "tag": "BODY",
+                "id": null,
+                "ariaLabel": null,
+                "text": "{\"@context\":\"https://schema.org\",\"@type\"",
+                "describedAs": "body",
+                "isBody": true,
+                "isTrigger": false
+              },
+              "activeElementWhileOpen": "body",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "div#_R_19asdbsnpfiv9qlb_-list[role=listbox] \"Next.jsNext.jsRemixAstroVite\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": "button#_R_19asdbsnpfiv9qlb_-trigger.flex.w-full.items-center \"Next.js\""
+            },
+            "capture": "select-morph-safari-before.txt",
+            "screenshot": "select-morph-safari-before.png"
+          },
+          "after": {
+            "url": "http://localhost:3301/components/motion/select",
+            "mouse": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": "_R_19asdbsnpfiv9qlb_-trigger",
+                "ariaLabel": null,
+                "text": "Next.js",
+                "describedAs": "button#_R_19asdbsnpfiv9qlb_-trigger \"Next.js\"",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "body",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "div#_R_19asdbsnpfiv9qlb_-list[role=listbox] \"Next.jsNext.jsRemixAstroVite\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": null
+            },
+            "keyboard": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": "_R_19asdbsnpfiv9qlb_-trigger",
+                "ariaLabel": null,
+                "text": "Next.js",
+                "describedAs": "button#_R_19asdbsnpfiv9qlb_-trigger \"Next.js\"",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "body",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "div#_R_19asdbsnpfiv9qlb_-list[role=listbox] \"Next.jsNext.jsRemixAstroVite\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": "button#_R_19asdbsnpfiv9qlb_-trigger.flex.w-full.items-center \"Next.js\""
+            },
+            "capture": "select-morph-safari-after.txt",
+            "screenshot": "select-morph-safari-after.png"
+          }
+        }
+      }
+    },
+    {
+      "overlay": "attachment-preview",
+      "title": "Attachment image preview",
+      "path": "/components/blocks/file-upload",
+      "previewRoot": "#attachment-upload-preview",
+      "trigger": "button[aria-label=\"Preview orange-flowers.jpg\"]",
+      "browsers": {
+        "chrome": {
+          "before": {
+            "url": "http://localhost:3300/components/blocks/file-upload",
+            "mouse": {
+              "outcome": "body",
+              "activeElementAfterClose": {
+                "tag": "BODY",
+                "id": null,
+                "ariaLabel": null,
+                "text": "{\"@context\":\"https://schema.org\",\"@type\"",
+                "describedAs": "body",
+                "isBody": true,
+                "isTrigger": false
+              },
+              "activeElementWhileOpen": "button[aria-label=\"Close image preview\"]",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "button[aria-label=\"Close image preview\"]",
+                "div",
+                "div[role=dialog][aria-label=\"Preview of orange-flowers.jpg\"]"
+              ],
+              "escapeClosedOverlay": false,
+              "triggerFocusedFirst": null
+            },
+            "keyboard": {
+              "outcome": "body",
+              "activeElementAfterClose": {
+                "tag": "BODY",
+                "id": null,
+                "ariaLabel": null,
+                "text": "{\"@context\":\"https://schema.org\",\"@type\"",
+                "describedAs": "body",
+                "isBody": true,
+                "isTrigger": false
+              },
+              "activeElementWhileOpen": "button[aria-label=\"Close image preview\"]",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "button[aria-label=\"Close image preview\"]",
+                "div",
+                "div[role=dialog][aria-label=\"Preview of orange-flowers.jpg\"]"
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": "button.group/image.relative.size-9[aria-label=\"Preview orange-flowers.jpg\"]"
+            },
+            "capture": "attachment-preview-chrome-before.txt",
+            "screenshot": null
+          },
+          "after": {
+            "url": "http://localhost:3301/components/blocks/file-upload",
+            "mouse": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": null,
+                "ariaLabel": "Preview orange-flowers.jpg",
+                "text": null,
+                "describedAs": "button[aria-label=\"Preview orange-flowers.jpg\"]",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "button[aria-label=\"Close image preview\"]",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "button[aria-label=\"Close image preview\"]",
+                "div",
+                "div[role=dialog][aria-label=\"Preview of orange-flowers.jpg\"]"
+              ],
+              "escapeClosedOverlay": false,
+              "triggerFocusedFirst": null
+            },
+            "keyboard": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": null,
+                "ariaLabel": "Preview orange-flowers.jpg",
+                "text": null,
+                "describedAs": "button[aria-label=\"Preview orange-flowers.jpg\"]",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "button[aria-label=\"Close image preview\"]",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "button[aria-label=\"Close image preview\"]",
+                "div",
+                "div[role=dialog][aria-label=\"Preview of orange-flowers.jpg\"]"
+              ],
+              "escapeClosedOverlay": false,
+              "triggerFocusedFirst": "button.group/image.relative.size-9[aria-label=\"Preview orange-flowers.jpg\"]"
+            },
+            "capture": "attachment-preview-chrome-after.txt",
+            "screenshot": null
+          }
+        },
+        "safari": {
+          "before": {
+            "url": "http://localhost:3300/components/blocks/file-upload",
+            "mouse": {
+              "outcome": "body",
+              "activeElementAfterClose": {
+                "tag": "BODY",
+                "id": null,
+                "ariaLabel": null,
+                "text": "{\"@context\":\"https://schema.org\",\"@type\"",
+                "describedAs": "body",
+                "isBody": true,
+                "isTrigger": false
+              },
+              "activeElementWhileOpen": "body",
+              "overlayOpened": false,
+              "overlayDescriptions": [],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": null
+            },
+            "keyboard": {
+              "outcome": "body",
+              "activeElementAfterClose": {
+                "tag": "BODY",
+                "id": null,
+                "ariaLabel": null,
+                "text": "{\"@context\":\"https://schema.org\",\"@type\"",
+                "describedAs": "body",
+                "isBody": true,
+                "isTrigger": false
+              },
+              "activeElementWhileOpen": "button[aria-label=\"Close image preview\"]",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "button[aria-label=\"Close image preview\"]",
+                "div",
+                "div[role=dialog][aria-label=\"Preview of orange-flowers.jpg\"]"
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": "button.group/image.relative.size-9[aria-label=\"Preview orange-flowers.jpg\"]"
+            },
+            "capture": "attachment-preview-safari-before.txt",
+            "screenshot": "attachment-preview-safari-before.png"
+          },
+          "after": {
+            "url": "http://localhost:3301/components/blocks/file-upload",
+            "mouse": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": null,
+                "ariaLabel": "Preview orange-flowers.jpg",
+                "text": null,
+                "describedAs": "button[aria-label=\"Preview orange-flowers.jpg\"]",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "button[aria-label=\"Close image preview\"]",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "button[aria-label=\"Close image preview\"]",
+                "div",
+                "div[role=dialog][aria-label=\"Preview of orange-flowers.jpg\"]"
+              ],
+              "escapeClosedOverlay": false,
+              "triggerFocusedFirst": null
+            },
+            "keyboard": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": null,
+                "ariaLabel": "Preview orange-flowers.jpg",
+                "text": null,
+                "describedAs": "button[aria-label=\"Preview orange-flowers.jpg\"]",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "button[aria-label=\"Close image preview\"]",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "button[aria-label=\"Close image preview\"]",
+                "div",
+                "div[role=dialog][aria-label=\"Preview of orange-flowers.jpg\"]"
+              ],
+              "escapeClosedOverlay": false,
+              "triggerFocusedFirst": "button.group/image.relative.size-9[aria-label=\"Preview orange-flowers.jpg\"]"
+            },
+            "capture": "attachment-preview-safari-after.txt",
+            "screenshot": "attachment-preview-safari-after.png"
+          }
+        }
+      }
+    },
+    {
+      "overlay": "swap-token-picker",
+      "title": "Swap token picker",
+      "path": "/components/blocks/swap",
+      "previewRoot": "#preview",
+      "trigger": "button \"ETΞETH\"",
+      "browsers": {
+        "chrome": {
+          "before": {
+            "url": "http://localhost:3300/components/blocks/swap",
+            "mouse": {
+              "outcome": "body",
+              "activeElementAfterClose": {
+                "tag": "BODY",
+                "id": null,
+                "ariaLabel": null,
+                "text": "{\"@context\":\"https://schema.org\",\"@type\"",
+                "describedAs": "body",
+                "isBody": true,
+                "isTrigger": false
+              },
+              "activeElementWhileOpen": "input",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "div[role=dialog][aria-label=\"Select from token\"] \"AllΞ◎BAOPBAMost popularETΞETHWEΞWETHUSΞU\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": null
+            },
+            "keyboard": {
+              "outcome": "body",
+              "activeElementAfterClose": {
+                "tag": "BODY",
+                "id": null,
+                "ariaLabel": null,
+                "text": "{\"@context\":\"https://schema.org\",\"@type\"",
+                "describedAs": "body",
+                "isBody": true,
+                "isTrigger": false
+              },
+              "activeElementWhileOpen": "input",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "div[role=dialog][aria-label=\"Select from token\"] \"AllΞ◎BAOPBAMost popularETΞETHWEΞWETHUSΞU\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": "button.group.inline-flex.h-10 \"ETΞETH\""
+            },
+            "capture": "swap-token-picker-chrome-before.txt",
+            "screenshot": null
+          },
+          "after": {
+            "url": "http://localhost:3301/components/blocks/swap",
+            "mouse": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": null,
+                "ariaLabel": null,
+                "text": "ETΞETH",
+                "describedAs": "button \"ETΞETH\"",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "input",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "div[role=dialog][aria-label=\"Select from token\"] \"AllΞ◎BAOPBAMost popularETΞETHWEΞWETHUSΞU\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": null
+            },
+            "keyboard": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": null,
+                "ariaLabel": null,
+                "text": "ETΞETH",
+                "describedAs": "button \"ETΞETH\"",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "input",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "div[role=dialog][aria-label=\"Select from token\"] \"AllΞ◎BAOPBAMost popularETΞETHWEΞWETHUSΞU\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": "button.group.inline-flex.h-10 \"ETΞETH\""
+            },
+            "capture": "swap-token-picker-chrome-after.txt",
+            "screenshot": null
+          }
+        },
+        "safari": {
+          "before": {
+            "url": "http://localhost:3300/components/blocks/swap",
+            "mouse": {
+              "outcome": "body",
+              "activeElementAfterClose": {
+                "tag": "BODY",
+                "id": null,
+                "ariaLabel": null,
+                "text": "{\"@context\":\"https://schema.org\",\"@type\"",
+                "describedAs": "body",
+                "isBody": true,
+                "isTrigger": false
+              },
+              "activeElementWhileOpen": "input",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "div[role=dialog][aria-label=\"Select from token\"] \"AllΞ◎BAOPBAMost popularETΞETHWEΞWETHUSΞU\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": null
+            },
+            "keyboard": {
+              "outcome": "body",
+              "activeElementAfterClose": {
+                "tag": "BODY",
+                "id": null,
+                "ariaLabel": null,
+                "text": "{\"@context\":\"https://schema.org\",\"@type\"",
+                "describedAs": "body",
+                "isBody": true,
+                "isTrigger": false
+              },
+              "activeElementWhileOpen": "input",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "div[role=dialog][aria-label=\"Select from token\"] \"AllΞ◎BAOPBAMost popularETΞETHWEΞWETHUSΞU\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": "button.group.inline-flex.h-10 \"ETΞETH\""
+            },
+            "capture": "swap-token-picker-safari-before.txt",
+            "screenshot": "swap-token-picker-safari-before.png"
+          },
+          "after": {
+            "url": "http://localhost:3301/components/blocks/swap",
+            "mouse": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": null,
+                "ariaLabel": null,
+                "text": "ETΞETH",
+                "describedAs": "button \"ETΞETH\"",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "input",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "div[role=dialog][aria-label=\"Select from token\"] \"AllΞ◎BAOPBAMost popularETΞETHWEΞWETHUSΞU\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": null
+            },
+            "keyboard": {
+              "outcome": "trigger",
+              "activeElementAfterClose": {
+                "tag": "BUTTON",
+                "id": null,
+                "ariaLabel": null,
+                "text": "ETΞETH",
+                "describedAs": "button \"ETΞETH\"",
+                "isBody": false,
+                "isTrigger": true
+              },
+              "activeElementWhileOpen": "input",
+              "overlayOpened": true,
+              "overlayDescriptions": [
+                "div[role=dialog][aria-label=\"Select from token\"] \"AllΞ◎BAOPBAMost popularETΞETHWEΞWETHUSΞU\""
+              ],
+              "escapeClosedOverlay": true,
+              "triggerFocusedFirst": "button.group.inline-flex.h-10 \"ETΞETH\""
+            },
+            "capture": "swap-token-picker-safari-after.txt",
+            "screenshot": "swap-token-picker-safari-after.png"
+          }
+        }
+      }
+    }
+  ]
+}

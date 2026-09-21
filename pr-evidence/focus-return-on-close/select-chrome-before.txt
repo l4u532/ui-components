@@ -1,0 +1,26 @@
+overlay: Select
+page: /components/motion/select   preview root: #default-preview
+variant: before (upstream main)
+url: http://localhost:3300/components/motion/select
+browser: Chrome 153.0.8010.50 via Playwright (channel "chrome", headed)
+viewport: 1440x900
+
+path 1 - mouse (click the trigger with no prior focus call, wait, press Escape):
+  trigger: button#_R_19aqdbsnpfiv9qlb_-trigger "Next.js"
+  no prior focus call; activeElement before the click: body
+  overlay opened: yes (div#_R_19aqdbsnpfiv9qlb_-list[role=listbox] "Next.jsRemixAstroVite")
+  activeElement while open: button#_R_19aqdbsnpfiv9qlb_-trigger "Next.js"
+  Escape closed the overlay: yes
+  activeElement after close: button#_R_19aqdbsnpfiv9qlb_-trigger "Next.js"
+  -> FOCUS RETURNED TO THE TRIGGER
+
+path 2 - keyboard (focus the trigger with window.__audit.focusAt, press Enter, wait, press Escape):
+  trigger: button#_R_19aqdbsnpfiv9qlb_-trigger "Next.js"
+  focusAt(): button#_R_19aqdbsnpfiv9qlb_-trigger.relative.z-10.flex "Next.js" -> activeElement button#_R_19aqdbsnpfiv9qlb_-trigger "Next.js"
+  overlay opened: yes (div#_R_19aqdbsnpfiv9qlb_-list[role=listbox] "Next.jsRemixAstroVite")
+  activeElement while open: button#_R_19aqdbsnpfiv9qlb_-trigger "Next.js"
+  Escape closed the overlay: yes
+  activeElement after close: button#_R_19aqdbsnpfiv9qlb_-trigger "Next.js"
+  -> FOCUS RETURNED TO THE TRIGGER
+
+(screenshots for this topic are taken in Safari only)

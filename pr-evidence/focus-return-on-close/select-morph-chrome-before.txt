@@ -1,0 +1,26 @@
+overlay: Morph select
+page: /components/motion/select   preview root: #morph-preview
+variant: before (upstream main)
+url: http://localhost:3300/components/motion/select
+browser: Chrome 153.0.8010.50 via Playwright (channel "chrome", headed)
+viewport: 1440x900
+
+path 1 - mouse (click the trigger with no prior focus call, wait, press Escape):
+  trigger: button#_R_19asdbsnpfiv9qlb_-trigger "Next.js"
+  no prior focus call; activeElement before the click: body
+  overlay opened: yes (div#_R_19asdbsnpfiv9qlb_-list[role=listbox] "Next.jsNext.jsRemixAstroVite")
+  activeElement while open: body
+  Escape closed the overlay: yes
+  activeElement after close: body
+  -> FOCUS LOST (BODY)
+
+path 2 - keyboard (focus the trigger with window.__audit.focusAt, press Enter, wait, press Escape):
+  trigger: button#_R_19asdbsnpfiv9qlb_-trigger "Next.js"
+  focusAt(): button#_R_19asdbsnpfiv9qlb_-trigger.flex.w-full.items-center "Next.js" -> activeElement button#_R_19asdbsnpfiv9qlb_-trigger "Next.js"
+  overlay opened: yes (div#_R_19asdbsnpfiv9qlb_-list[role=listbox] "Next.jsNext.jsRemixAstroVite")
+  activeElement while open: body
+  Escape closed the overlay: yes
+  activeElement after close: body
+  -> FOCUS LOST (BODY)
+
+(screenshots for this topic are taken in Safari only)

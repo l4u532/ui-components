@@ -1,0 +1,26 @@
+overlay: Bottom sheet
+page: /components/motion/bottom-sheet   preview root: #preview
+variant: after (PR branch fix/focus-return-on-close)
+url: http://localhost:3301/components/motion/bottom-sheet
+browser: Chrome 153.0.8010.50 via Playwright (channel "chrome", headed)
+viewport: 1440x900
+
+path 1 - mouse (click the trigger with no prior focus call, wait, press Escape):
+  trigger: button "Open bottom sheet"
+  no prior focus call; activeElement before the click: body
+  overlay opened: yes (button[aria-label="Close bottom sheet"] | div[role=dialog] "Quick actionsDrag the handle, fling, or ")
+  activeElement while open: div[role=dialog] "Quick actionsDrag the handle, fling, or "
+  Escape closed the overlay: yes
+  activeElement after close: button "Open bottom sheet"
+  -> FOCUS RETURNED TO THE TRIGGER
+
+path 2 - keyboard (focus the trigger with window.__audit.focusAt, press Enter, wait, press Escape):
+  trigger: button "Open bottom sheet"
+  focusAt(): button.inline-flex.h-10.items-center "Open bottom sheet" -> activeElement button "Open bottom sheet"
+  overlay opened: yes (button[aria-label="Close bottom sheet"] | div[role=dialog] "Quick actionsDrag the handle, fling, or ")
+  activeElement while open: div[role=dialog] "Quick actionsDrag the handle, fling, or "
+  Escape closed the overlay: yes
+  activeElement after close: button "Open bottom sheet"
+  -> FOCUS RETURNED TO THE TRIGGER
+
+(screenshots for this topic are taken in Safari only)

@@ -1,0 +1,26 @@
+overlay: Attachment image preview
+page: /components/blocks/file-upload   preview root: #attachment-upload-preview
+variant: after (PR branch fix/focus-return-on-close)
+url: http://localhost:3301/components/blocks/file-upload
+browser: Chrome 153.0.8010.50 via Playwright (channel "chrome", headed)
+viewport: 1440x900
+
+path 1 - mouse (click the trigger with no prior focus call, wait, press Escape):
+  trigger: button[aria-label="Preview orange-flowers.jpg"]
+  no prior focus call; activeElement before the click: body
+  overlay opened: yes (button[aria-label="Close image preview"] | div | div[role=dialog][aria-label="Preview of orange-flowers.jpg"])
+  activeElement while open: button[aria-label="Close image preview"]
+  Escape closed the overlay: NO (span "Click to preview")
+  activeElement after close: button[aria-label="Preview orange-flowers.jpg"]
+  -> FOCUS RETURNED TO THE TRIGGER
+
+path 2 - keyboard (focus the trigger with window.__audit.focusAt, press Enter, wait, press Escape):
+  trigger: button[aria-label="Preview orange-flowers.jpg"]
+  focusAt(): button.group/image.relative.size-9[aria-label="Preview orange-flowers.jpg"] -> activeElement button[aria-label="Preview orange-flowers.jpg"]
+  overlay opened: yes (button[aria-label="Close image preview"] | div | div[role=dialog][aria-label="Preview of orange-flowers.jpg"])
+  activeElement while open: button[aria-label="Close image preview"]
+  Escape closed the overlay: NO (span "Click to preview")
+  activeElement after close: button[aria-label="Preview orange-flowers.jpg"]
+  -> FOCUS RETURNED TO THE TRIGGER
+
+(screenshots for this topic are taken in Safari only)

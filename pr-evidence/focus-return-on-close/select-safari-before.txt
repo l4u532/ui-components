@@ -1,0 +1,26 @@
+overlay: Select
+page: /components/motion/select   preview root: #default-preview
+variant: before (upstream main)
+url: http://localhost:3300/components/motion/select
+browser: Safari 26.6.2 on macOS 26.6.2, driven by safaridriver (W3C WebDriver, port 4491)
+viewport: 1440x900
+
+path 1 - mouse (click the trigger with no prior focus call, wait, press Escape):
+  trigger: button#_R_19aqdbsnpfiv9qlb_-trigger "Next.js"
+  no prior focus call; activeElement before the click: body
+  overlay opened: yes (div#_R_19aqdbsnpfiv9qlb_-list[role=listbox] "Next.jsRemixAstroVite")
+  activeElement while open: body
+  Escape closed the overlay: yes
+  activeElement after close: body
+  -> FOCUS LOST (BODY)
+
+path 2 - keyboard (focus the trigger with window.__audit.focusAt, press Enter, wait, press Escape):
+  trigger: button#_R_19aqdbsnpfiv9qlb_-trigger "Next.js"
+  focusAt(): button#_R_19aqdbsnpfiv9qlb_-trigger.relative.z-10.flex "Next.js" -> activeElement button#_R_19aqdbsnpfiv9qlb_-trigger "Next.js"
+  overlay opened: yes (div#_R_19aqdbsnpfiv9qlb_-list[role=listbox] "Next.jsRemixAstroVite")
+  activeElement while open: button#_R_19aqdbsnpfiv9qlb_-trigger "Next.js"
+  Escape closed the overlay: yes
+  activeElement after close: button#_R_19aqdbsnpfiv9qlb_-trigger "Next.js"
+  -> FOCUS RETURNED TO THE TRIGGER
+
+screenshot after the close on the mouse path: select-safari-before.png

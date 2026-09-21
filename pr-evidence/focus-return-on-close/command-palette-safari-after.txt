@@ -1,0 +1,26 @@
+overlay: Command palette
+page: /components/blocks/command-palette   preview root: #preview
+variant: after (PR branch fix/focus-return-on-close)
+url: http://localhost:3301/components/blocks/command-palette
+browser: Safari 26.6.2 on macOS 26.6.2, driven by safaridriver (W3C WebDriver, port 4491)
+viewport: 1440x900
+
+path 1 - mouse (click the trigger with no prior focus call, wait, press Escape):
+  trigger: button "Open command palette"
+  no prior focus call; activeElement before the click: body
+  overlay opened: yes (button[aria-label="Close command palette"] | div "ESCNavigationGo to HomeG HOpen profileG " | div[role=dialog][aria-label="Command palette"] "ESCNavigationGo to HomeG HOpen profileG " | div#_R_t5cdbsnpfiv9qlb_-list[role=listbox][aria-label="Commands"] "NavigationGo to HomeG HOpen profileG PSe")
+  activeElement while open: input[role=combobox]
+  Escape closed the overlay: NO (div "ESCNavigationGo to HomeG HOpen profileG ")
+  activeElement after close: body
+  -> FOCUS LOST (BODY)
+
+path 2 - keyboard (focus the trigger with window.__audit.focusAt, press Enter, wait, press Escape):
+  trigger: button "Open command palette"
+  focusAt(): button.inline-flex.h-10.items-center "Open command palette" -> activeElement button "Open command palette"
+  overlay opened: yes (button[aria-label="Close command palette"] | div "ESCNavigationGo to HomeG HOpen profileG " | div[role=dialog][aria-label="Command palette"] "ESCNavigationGo to HomeG HOpen profileG " | div#_R_t5cdbsnpfiv9qlb_-list[role=listbox][aria-label="Commands"] "NavigationGo to HomeG HOpen profileG PSe")
+  activeElement while open: input[role=combobox]
+  Escape closed the overlay: yes
+  activeElement after close: button "Open command palette"
+  -> FOCUS RETURNED TO THE TRIGGER
+
+screenshot after the close on the mouse path: command-palette-safari-after.png
