@@ -5,10 +5,20 @@ import {
   motion,
   useReducedMotion,
 } from "motion/react";
-import { type ReactNode, useEffect } from "react";
+import { type ReactNode, useEffect, useRef } from "react";
 import { EASE_OUT, SPRING_PANEL } from "@/lib/ease";
 import { PresenceGate } from "@/lib/presence-gate";
 import { cn } from "@/lib/utils";
+
+// Same shape as the one in center-morph-modal.tsx: what focus can land on.
+const FOCUSABLE_SELECTOR = [
+  "a[href]",
+  "button:not([disabled])",
+  "input:not([disabled])",
+  "select:not([disabled])",
+  "textarea:not([disabled])",
+  '[tabindex]:not([tabindex="-1"])',
+].join(",");
 
 export interface MorphingModalProps {
   /** Which view is currently shown. `null` closes the modal. */
@@ -17,6 +27,8 @@ export interface MorphingModalProps {
   children: ReactNode;
   /** "bottom" anchors to the viewport bottom (mobile-like). "center" centers vertically. */
   placement?: "bottom" | "center";
+  /** Accessible name for the dialog. */
+  ariaLabel?: string;
   className?: string;
 }
 
@@ -25,10 +37,13 @@ export function MorphingModal({
   onClose,
   children,
   placement = "bottom",
+  ariaLabel = "Dialog",
   className,
 }: MorphingModalProps) {
   const open = viewId !== null;
   const reduce = useReducedMotion();
+  const panelRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
   const enterY = reduce ? 0 : placement === "bottom" ? 40 : 20;
   const enterScale = reduce ? 1 : 0.97;
 
@@ -36,8 +51,51 @@ export function MorphingModal({
     if (!open) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
     return () => {
+      window.removeEventListener("keydown", onKey);
       document.body.style.overflow = prev;
+    };
+  }, [open, onClose]);
+
+  // WebKit does not focus a button on click, so by the time the modal opens
+  // `document.activeElement` is <body> in Safari and a hand-back reading it
+  // alone would strand focus there — the case this is meant to fix. Remember
+  // the control the last activation landed on while the modal is closed: the
+  // capture listener sees the click before the handler that opens the modal,
+  // and a keyboard activation fires a click too.
+  useEffect(() => {
+    if (open) return;
+    const onActivate = (event: Event) => {
+      const target = event.target;
+      triggerRef.current =
+        target instanceof HTMLElement
+          ? target.closest<HTMLElement>(FOCUSABLE_SELECTOR)
+          : null;
+    };
+    document.addEventListener("click", onActivate, true);
+    return () => document.removeEventListener("click", onActivate, true);
+  }, [open]);
+
+  // A modal dialog takes focus on open and hands it back on close. A genuinely
+  // focused element wins; otherwise the remembered trigger stands in for it.
+  useEffect(() => {
+    if (!open) return;
+    const active = document.activeElement;
+    const previousFocus =
+      active instanceof HTMLElement && active !== document.body
+        ? active
+        : triggerRef.current;
+    const frame = requestAnimationFrame(() => {
+      panelRef.current?.focus({ preventScroll: true });
+    });
+    return () => {
+      cancelAnimationFrame(frame);
+      if (previousFocus?.isConnected)
+        previousFocus.focus({ preventScroll: true });
     };
   }, [open]);
 
@@ -82,6 +140,11 @@ export function MorphingModal({
             >
               <motion.div
                 key="panel"
+                ref={panelRef}
+                role="dialog"
+                aria-modal="true"
+                aria-label={ariaLabel}
+                tabIndex={-1}
                 layout
                 initial={{ opacity: 0, y: enterY, scale: enterScale }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
