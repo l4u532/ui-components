@@ -328,9 +328,13 @@ function ImageThumbnail({
         aria-label={`Preview ${item.name}`}
         // Keep focus on the thumbnail: the preview overlay hands focus back to
         // whatever was focused when it opened, and a blurred trigger sends
-        // that hand-back to <body>. The mouse ring is already suppressed by
-        // focus-visible.
-        onClick={() => onPreview(item)}
+        // that hand-back to <body>. WebKit never focuses a clicked button, so
+        // the thumbnail claims focus itself or there is nothing to hand back.
+        // The mouse ring is already suppressed by focus-visible.
+        onClick={(event) => {
+          event.currentTarget.focus({ preventScroll: true });
+          onPreview(item);
+        }}
         whileTap={reduce ? undefined : { scale: 0.94 }}
         transition={SPRING_PRESS}
         className="group/image relative size-9 shrink-0 overflow-hidden rounded-[10px] bg-muted outline-none ring-1 ring-border/70 focus-visible:ring-2 focus-visible:ring-ring"

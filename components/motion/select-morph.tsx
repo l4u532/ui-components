@@ -145,7 +145,8 @@ export function MorphSelect({
   // page's focus lands on <body> after every selection or Escape. The trigger
   // itself unmounts while the panel is open (it morphs into the surface), so
   // the element captured on open is usually gone by then: fall back to the
-  // remounted trigger by id.
+  // remounted trigger by id. A click in WebKit captures nothing at all, and
+  // <body> is not somewhere to hand focus to, so it takes the same fallback.
   useEffect(() => {
     if (!open) return;
     const previousFocus =
@@ -153,7 +154,11 @@ export function MorphSelect({
         ? document.activeElement
         : null;
     return () => {
-      const target = previousFocus?.isConnected
+      const held =
+        previousFocus &&
+        previousFocus !== document.body &&
+        previousFocus.isConnected;
+      const target = held
         ? previousFocus
         : document.getElementById(`${baseId}-trigger`);
       target?.focus({ preventScroll: true });

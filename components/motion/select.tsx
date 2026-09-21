@@ -157,7 +157,9 @@ export function Select({
 
   // Hand focus back on close. Picking an option unmounts the focused option
   // button, and WebKit never focuses a clicked trigger, so without this the
-  // page's focus lands on <body> after every selection or Escape.
+  // page's focus lands on <body> after every selection or Escape. A click in
+  // WebKit leaves nothing captured at all — <body> is not somewhere to hand
+  // focus to, so fall back to the trigger, which is where the panel came from.
   useEffect(() => {
     if (!open) return;
     const previousFocus =
@@ -165,9 +167,16 @@ export function Select({
         ? document.activeElement
         : null;
     return () => {
-      previousFocus?.focus({ preventScroll: true });
+      const held =
+        previousFocus &&
+        previousFocus !== document.body &&
+        previousFocus.isConnected;
+      const target = held
+        ? previousFocus
+        : document.getElementById(`${baseId}-trigger`);
+      target?.focus({ preventScroll: true });
     };
-  }, [open]);
+  }, [open, baseId]);
 
   const ctx = useMemo<SelectContextValue>(
     () => ({
