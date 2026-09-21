@@ -1,0 +1,49 @@
+page area: Docs install command box (on the table page)
+path: /components/motion/table   root: the install command card (found by shape: the overflow-x-auto line whose text starts "$ ")
+browser: Safari 26.6.2 on macOS 26.6.2, driven by safaridriver (W3C WebDriver, port 4491)
+viewport: 1440x900
+method: scroll the root so its top sits 96 px below the viewport top, click its top-left padding at
+  (root.left + 6, 102) to set WebKit's focus-navigation starting point, then press Tab 8 times and
+  read document.activeElement after each press. A step counts as a scroll region when the focused
+  element carries an overflow-auto / overflow-scroll class and is not a natively focusable control.
+
+variant: before (upstream main, http://localhost:3300)
+  url: http://localhost:3300/components/motion/table
+  scroll regions inside the root before tabbing (element / tabIndex):
+    tabIndex=-1  div "IntroHomeGuidesMotion GuidesAgent GuideO"
+    tabIndex=-1  div "NameEmailRoleStatusMRRLeo Marshleo.marsh"
+    tabIndex=-1  div
+    tabIndex=-1  div "NameEmailRoleStatusMRRAva Coleava.cole0@"
+  Tab sequence:
+    Tab 1: button[aria-label="Copy code"]
+    Tab 2: input[aria-label="Rename name column"]
+    Tab 3: input[aria-label="Rename role column"]
+    Tab 4: input[aria-label="Rename team column"]
+    Tab 5: input[aria-label="name for row 1"]
+    Tab 6: input[aria-label="role for row 1"]
+    Tab 7: input[aria-label="team for row 1"]
+    Tab 8: input[aria-label="name for row 2"]
+  scroll region reached: no, not within the first 8 tab stops
+  screenshot: install-command-safari-before.png
+
+variant: after (PR branch fix/scroll-region-tab-stops, http://localhost:3304)
+  url: http://localhost:3304/components/motion/table
+  scroll regions inside the root before tabbing (element / tabIndex):
+    tabIndex=-1  div "IntroHomeGuidesMotion GuidesAgent GuideO"
+    tabIndex=0  div "NameEmailRoleStatusMRRLeo Marshleo.marsh"
+    tabIndex=0  div
+    tabIndex=0  div "NameEmailRoleStatusMRRAva Coleava.cole0@"
+  Tab sequence:
+    Tab 1: button[aria-label="Copy code"]
+    Tab 2: div "$ bunx --bun shadcn add @beui/tabletable"   <= SCROLL REGION (tabIndex 0, overflow auto/auto, actually scrolls: no)
+    Tab 3: div   <= SCROLL REGION (tabIndex 0, overflow auto/auto, actually scrolls: yes)
+    Tab 4: input[aria-label="Rename name column"]
+    Tab 5: input[aria-label="Rename role column"]
+    Tab 6: input[aria-label="Rename team column"]
+    Tab 7: input[aria-label="name for row 1"]
+    Tab 8: input[aria-label="role for row 1"]
+  scroll region reached: yes, at Tab 2
+  screenshot: install-command-safari-after.png
+
+screenshots: install-command-safari-before.png and install-command-safari-after.png are the same viewport and the same
+  number of Tab presses (2); after the fix the focused scroll region draws an inset ring.

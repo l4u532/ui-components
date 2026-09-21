@@ -1,0 +1,43 @@
+page area: Table (async preview, the region axe flags)
+path: /components/motion/table   root: #async-preview
+browser: Safari 26.6.2 on macOS 26.6.2, driven by safaridriver (W3C WebDriver, port 4491)
+viewport: 1440x900
+method: scroll the root so its top sits 96 px below the viewport top, click its top-left padding at
+  (root.left + 6, 102) to set WebKit's focus-navigation starting point, then press Tab 8 times and
+  read document.activeElement after each press. A step counts as a scroll region when the focused
+  element carries an overflow-auto / overflow-scroll class and is not a natively focusable control.
+
+variant: before (upstream main, http://localhost:3300)
+  url: http://localhost:3300/components/motion/table
+  scroll regions inside the root before tabbing (element / tabIndex):
+    tabIndex=-1  div "NameEmailRoleStatusMRRAva Coleava.cole0@"
+  Tab sequence:
+    Tab 1: button[aria-label="Copy code"]
+    Tab 2: a "Explore beUI Pro"
+    Tab 3: a[aria-label="Star on GitHub"]
+    Tab 4: a "Get Pro"
+    Tab 5: button#_r_b_[role=checkbox][aria-label="Select all rows"]
+    Tab 6: button#_r_52_[role=checkbox][aria-label="Select row 1"]
+    Tab 7: button#_r_53_[role=checkbox][aria-label="Select row 2"]
+    Tab 8: button#_r_54_[role=checkbox][aria-label="Select row 3"]
+  scroll region reached: no, not within the first 8 tab stops
+  screenshot: table-async-safari-before.png
+
+variant: after (PR branch fix/scroll-region-tab-stops, http://localhost:3304)
+  url: http://localhost:3304/components/motion/table
+  scroll regions inside the root before tabbing (element / tabIndex):
+    tabIndex=0  div "NameEmailRoleStatusMRRAva Coleava.cole0@"
+  Tab sequence:
+    Tab 1: div "NameEmailRoleStatusMRRAva Coleava.cole0@"   <= SCROLL REGION (tabIndex 0, overflow auto/auto, actually scrolls: yes)
+    Tab 2: button[aria-label="Copy code"]
+    Tab 3: div "$ bunx --bun shadcn add @beui/table-asyn"   <= SCROLL REGION (tabIndex 0, overflow auto/auto, actually scrolls: no)
+    Tab 4: a "Explore beUI Pro"
+    Tab 5: a[aria-label="Star on GitHub"]
+    Tab 6: a "Get Pro"
+    Tab 7: div "NameEmailRoleStatusMRRLeo Marshleo.marsh"   <= SCROLL REGION (tabIndex 0, overflow auto/auto, actually scrolls: yes)
+    Tab 8: button#_r_b_[role=checkbox][aria-label="Select all rows"]
+  scroll region reached: yes, at Tab 1
+  screenshot: table-async-safari-after.png
+
+screenshots: table-async-safari-before.png and table-async-safari-after.png are the same viewport and the same
+  number of Tab presses (1); after the fix the focused scroll region draws an inset ring.

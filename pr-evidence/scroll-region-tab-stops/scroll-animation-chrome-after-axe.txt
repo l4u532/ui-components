@@ -1,0 +1,24 @@
+page: Scroll animation (scroll reveal, parallax, scroll progress)
+path: /components/motion/scroll-animation
+variant: after (PR branch fix/scroll-region-tab-stops)
+url: http://localhost:3304/components/motion/scroll-animation
+browser: Chrome 153.0.8010.50 via Playwright (channel "chrome", headed)
+viewport: 1440x900
+method: the page is scrolled top to bottom in 600 px steps (700 ms per step) so every lazily
+  mounted preview renders and every streaming demo settles, then scrolled back to the top;
+  axe-core 4.x is injected from the audit harness and run over the whole document with
+  runOnly tags wcag2a, wcag2aa, wcag21a, wcag21aa, best-practice.
+
+axe rule "scrollable-region-focusable" (Ensure elements that have scrollable content are accessible by keyboard)
+violating nodes: 0
+  (none)
+
+scroll regions found in <main> at the end of the pass (element / tabIndex):
+  tabIndex=-1  div "IntroHomeGuidesMotion GuidesAgent GuideO"
+  tabIndex=0  div "Section 1Section 2Section 3Section 4Sect"
+  tabIndex=0  div "Section 1Section 2Section 3Section 4Sect"
+  tabIndex=0  div "Scroll down ↓Parallax↑ Scroll up"
+  tabIndex=0  div "IntroFeaturesPricingFAQIntroFeaturesPric"
+  tabIndex=0  div "Scroll ↓Spring slideBlur inStaggered by "
+
+other axe rules with violations on this page (unchanged by this PR): color-contrast (1), landmark-unique (1), region (3)

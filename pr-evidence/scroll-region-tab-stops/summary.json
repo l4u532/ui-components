@@ -1,0 +1,1662 @@
+{
+  "subject": "fix: give scroll regions a tab stop",
+  "capturedAt": "2026-09-21T12:05:29.774Z",
+  "defect": "Scrollable containers in the library and in the docs chrome had no tab stop, so a keyboard user could not scroll them: axe-core reports them under scrollable-region-focusable, and in Safari the Tab sequence walks straight past them.",
+  "method": {
+    "chrome": "Each page is loaded, walked top to bottom in 600 px steps (700 ms per step) so every lazily mounted preview renders and every streaming demo settles, then scrolled back to the top. axe-core 4.13.0 from the audit harness is injected and run over the whole document with runOnly tags wcag2a, wcag2aa, wcag21a, wcag21aa and best-practice. Recorded: the node count and target selectors of the scrollable-region-focusable rule.",
+    "safari": "For each scroll region, the preview root is scrolled so its top sits 96 px below the viewport top, its top-left padding is clicked at (root.left + 6, 102) to set WebKit's focus-navigation starting point, then Tab is pressed 8 times and document.activeElement is read after each press. A step counts as a scroll region when the focused element carries an overflow-auto / overflow-scroll class and is not a natively focusable control."
+  },
+  "environment": {
+    "machine": "macOS 26.6.2",
+    "chrome": {
+      "version": "153.0.8010.50",
+      "driver": "Playwright, chromium.launch({ channel: \"chrome\", headless: false })",
+      "viewport": "1440x900",
+      "axe": "axe-core 4.13.0"
+    },
+    "safari": {
+      "version": "26.6.2",
+      "driver": "safaridriver (W3C WebDriver) on port 4491",
+      "viewport": "1440x900"
+    }
+  },
+  "builds": {
+    "before": {
+      "label": "upstream main",
+      "origin": "http://localhost:3300",
+      "servedFrom": "wt/upstream-main"
+    },
+    "after": {
+      "label": "PR branch fix/scroll-region-tab-stops",
+      "origin": "http://localhost:3304",
+      "servedFrom": "wt/scroll-region-tab-stops"
+    }
+  },
+  "totals": {
+    "chromeAxeBefore": 7,
+    "chromeAxeAfter": 0,
+    "safariRegionsReachedBefore": 0,
+    "safariRegionsReachedAfter": 11,
+    "safariAreas": 11
+  },
+  "deviationsFromExpectation": [
+    "The expected axe count was 12 violating nodes before the fix; the measurement finds 7, and 0 after. The three pages that contribute nothing are explained below, and none of them contradicts the fix.",
+    "Pull to refresh: its scroller does not overflow at 1440x900, so there is nothing for axe to flag in either build. The tab stop the PR adds is unconditional, and Safari does reach it after the fix.",
+    "Agent activity: none of the six demos caps its viewport at 1440x900, so the element stays overflow-y-hidden and the PR's tab stop (gated on capped && expanded && !working) never applies. No axe violation before or after, and the only region Safari reaches on that page is the docs install command box.",
+    "The docs install command box: the install command fits the card at 1440x900, so the box does not scroll and axe does not flag it. It still gets its tab stop after the fix, which the Safari walk shows on every page.",
+    "The table page's data preview is not flagged either: that scroller contains 33 focusable descendants (sort buttons, row inputs), and the axe rule exempts a scrollable region whose content is reachable by keyboard. The async preview on the same page has no focusable content and is flagged."
+  ],
+  "pages": [
+    {
+      "page": "code-block",
+      "title": "Code block",
+      "path": "/components/agents/code-block",
+      "chrome": {
+        "before": {
+          "url": "http://localhost:3300/components/agents/code-block",
+          "scrollableRegionFocusableNodes": 1,
+          "targets": [
+            ".overflow-auto"
+          ],
+          "capture": "code-block-chrome-before-axe.txt"
+        },
+        "after": {
+          "url": "http://localhost:3304/components/agents/code-block",
+          "scrollableRegionFocusableNodes": 0,
+          "targets": [],
+          "capture": "code-block-chrome-after-axe.txt"
+        }
+      }
+    },
+    {
+      "page": "table",
+      "title": "Table (also carries the docs install command box)",
+      "path": "/components/motion/table",
+      "chrome": {
+        "before": {
+          "url": "http://localhost:3300/components/motion/table",
+          "scrollableRegionFocusableNodes": 1,
+          "targets": [
+            "#async-preview > div > .mt-4:nth-child(2) > .min-h-\\[260px\\].py-10.justify-center > .p-4.w-full.justify-center > .flex-col.w-full.gap-2 > .rounded-2xl.bg-background.w-full > .overflow-auto"
+          ],
+          "capture": "table-chrome-before-axe.txt"
+        },
+        "after": {
+          "url": "http://localhost:3304/components/motion/table",
+          "scrollableRegionFocusableNodes": 0,
+          "targets": [],
+          "capture": "table-chrome-after-axe.txt"
+        }
+      }
+    },
+    {
+      "page": "infinite-masonry",
+      "title": "Infinite masonry",
+      "path": "/components/blocks/infinite-masonry",
+      "chrome": {
+        "before": {
+          "url": "http://localhost:3300/components/blocks/infinite-masonry",
+          "scrollableRegionFocusableNodes": 1,
+          "targets": [
+            ".contain-\\[layout_paint\\]"
+          ],
+          "capture": "infinite-masonry-chrome-before-axe.txt"
+        },
+        "after": {
+          "url": "http://localhost:3304/components/blocks/infinite-masonry",
+          "scrollableRegionFocusableNodes": 0,
+          "targets": [],
+          "capture": "infinite-masonry-chrome-after-axe.txt"
+        }
+      }
+    },
+    {
+      "page": "pull-to-refresh",
+      "title": "Pull to refresh",
+      "path": "/components/motion/pull-to-refresh",
+      "chrome": {
+        "before": {
+          "url": "http://localhost:3300/components/motion/pull-to-refresh",
+          "scrollableRegionFocusableNodes": 0,
+          "targets": [],
+          "capture": "pull-to-refresh-chrome-before-axe.txt"
+        },
+        "after": {
+          "url": "http://localhost:3304/components/motion/pull-to-refresh",
+          "scrollableRegionFocusableNodes": 0,
+          "targets": [],
+          "capture": "pull-to-refresh-chrome-after-axe.txt"
+        }
+      }
+    },
+    {
+      "page": "agent-activity",
+      "title": "Agent activity",
+      "path": "/components/agents/agent-activity",
+      "chrome": {
+        "before": {
+          "url": "http://localhost:3300/components/agents/agent-activity",
+          "scrollableRegionFocusableNodes": 0,
+          "targets": [],
+          "capture": "agent-activity-chrome-before-axe.txt"
+        },
+        "after": {
+          "url": "http://localhost:3304/components/agents/agent-activity",
+          "scrollableRegionFocusableNodes": 0,
+          "targets": [],
+          "capture": "agent-activity-chrome-after-axe.txt"
+        }
+      }
+    },
+    {
+      "page": "message-scroller",
+      "title": "Message scroller",
+      "path": "/components/agents/message-scroller",
+      "chrome": {
+        "before": {
+          "url": "http://localhost:3300/components/agents/message-scroller",
+          "scrollableRegionFocusableNodes": 1,
+          "targets": [
+            ".overscroll-contain"
+          ],
+          "capture": "message-scroller-chrome-before-axe.txt"
+        },
+        "after": {
+          "url": "http://localhost:3304/components/agents/message-scroller",
+          "scrollableRegionFocusableNodes": 0,
+          "targets": [],
+          "capture": "message-scroller-chrome-after-axe.txt"
+        }
+      }
+    },
+    {
+      "page": "scroll-animation",
+      "title": "Scroll animation (scroll reveal, parallax, scroll progress)",
+      "path": "/components/motion/scroll-animation",
+      "chrome": {
+        "before": {
+          "url": "http://localhost:3300/components/motion/scroll-animation",
+          "scrollableRegionFocusableNodes": 3,
+          "targets": [
+            ".max-w-lg.rounded-2xl.w-full > .h-64.overflow-y-auto.scrollbar-hide",
+            ".h-\\[600px\\]",
+            "#scroll-reveal-preview > div > .mt-4:nth-child(2) > .min-h-\\[260px\\].py-10.justify-center > .h-80.max-w-lg.overflow-y-auto"
+          ],
+          "capture": "scroll-animation-chrome-before-axe.txt"
+        },
+        "after": {
+          "url": "http://localhost:3304/components/motion/scroll-animation",
+          "scrollableRegionFocusableNodes": 0,
+          "targets": [],
+          "capture": "scroll-animation-chrome-after-axe.txt"
+        }
+      }
+    }
+  ],
+  "safariTabWalks": [
+    {
+      "area": "code-block",
+      "title": "Code block",
+      "path": "/components/agents/code-block",
+      "root": "#preview",
+      "capture": "code-block-safari-tabs.txt",
+      "before": {
+        "url": "http://localhost:3300/components/agents/code-block",
+        "scrollRegionReachedAtTab": null,
+        "tabSequence": [
+          {
+            "tab": 1,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 2,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 3,
+            "focus": "a \"Explore beUI Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 4,
+            "focus": "a[aria-label=\"Star on GitHub\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 5,
+            "focus": "a \"Get Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 6,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 7,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 8,
+            "focus": "a \"Explore beUI Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          }
+        ],
+        "scrollRegionsInRoot": [
+          {
+            "desc": "div \"1import { generateText } from \"ai\";23exp\"",
+            "tabIndex": -1
+          }
+        ],
+        "screenshot": "code-block-safari-before.png",
+        "screenshotAfterTabs": 2
+      },
+      "after": {
+        "url": "http://localhost:3304/components/agents/code-block",
+        "scrollRegionReachedAtTab": 2,
+        "tabSequence": [
+          {
+            "tab": 1,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 2,
+            "focus": "div \"1import { generateText } from \"ai\";23exp\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 3,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 4,
+            "focus": "div \"$ bunx --bun shadcn add @beui/code-block\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 5,
+            "focus": "a \"Explore beUI Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 6,
+            "focus": "a[aria-label=\"Star on GitHub\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 7,
+            "focus": "a \"Get Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 8,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          }
+        ],
+        "scrollRegionsInRoot": [
+          {
+            "desc": "div \"1import { generateText } from \"ai\";23exp\"",
+            "tabIndex": 0
+          }
+        ],
+        "screenshot": "code-block-safari-after.png",
+        "screenshotAfterTabs": 2,
+        "screenshotFocus": "div \"1import { generateText } from \"ai\";23exp\""
+      }
+    },
+    {
+      "area": "table",
+      "title": "Table (data preview)",
+      "path": "/components/motion/table",
+      "root": "#data-preview",
+      "capture": "table-safari-tabs.txt",
+      "before": {
+        "url": "http://localhost:3300/components/motion/table",
+        "scrollRegionReachedAtTab": null,
+        "tabSequence": [
+          {
+            "tab": 1,
+            "focus": "button#_r_b_[role=checkbox][aria-label=\"Select all rows\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 2,
+            "focus": "button#_r_52_[role=checkbox][aria-label=\"Select row 1\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 3,
+            "focus": "button#_r_53_[role=checkbox][aria-label=\"Select row 2\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 4,
+            "focus": "button#_r_54_[role=checkbox][aria-label=\"Select row 3\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 5,
+            "focus": "button#_r_55_[role=checkbox][aria-label=\"Select row 4\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 6,
+            "focus": "button#_r_56_[role=checkbox][aria-label=\"Select row 5\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 7,
+            "focus": "button#_r_57_[role=checkbox][aria-label=\"Select row 6\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 8,
+            "focus": "button#_r_58_[role=checkbox][aria-label=\"Select row 7\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          }
+        ],
+        "scrollRegionsInRoot": [
+          {
+            "desc": "div \"NameEmailRoleStatusMRRLeo Marshleo.marsh\"",
+            "tabIndex": -1
+          }
+        ],
+        "screenshot": "table-safari-before.png",
+        "screenshotAfterTabs": 1
+      },
+      "after": {
+        "url": "http://localhost:3304/components/motion/table",
+        "scrollRegionReachedAtTab": 1,
+        "tabSequence": [
+          {
+            "tab": 1,
+            "focus": "div \"NameEmailRoleStatusMRRLeo Marshleo.marsh\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 2,
+            "focus": "button#_r_b_[role=checkbox][aria-label=\"Select all rows\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 3,
+            "focus": "button#_r_52_[role=checkbox][aria-label=\"Select row 1\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 4,
+            "focus": "button#_r_53_[role=checkbox][aria-label=\"Select row 2\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 5,
+            "focus": "button#_r_54_[role=checkbox][aria-label=\"Select row 3\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 6,
+            "focus": "button#_r_55_[role=checkbox][aria-label=\"Select row 4\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 7,
+            "focus": "button#_r_56_[role=checkbox][aria-label=\"Select row 5\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 8,
+            "focus": "button#_r_57_[role=checkbox][aria-label=\"Select row 6\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          }
+        ],
+        "scrollRegionsInRoot": [
+          {
+            "desc": "div \"NameEmailRoleStatusMRRLeo Marshleo.marsh\"",
+            "tabIndex": 0
+          }
+        ],
+        "screenshot": "table-safari-after.png",
+        "screenshotAfterTabs": 1,
+        "screenshotFocus": "div \"NameEmailRoleStatusMRRLeo Marshleo.marsh\""
+      }
+    },
+    {
+      "area": "table-async",
+      "title": "Table (async preview, the region axe flags)",
+      "path": "/components/motion/table",
+      "root": "#async-preview",
+      "capture": "table-async-safari-tabs.txt",
+      "before": {
+        "url": "http://localhost:3300/components/motion/table",
+        "scrollRegionReachedAtTab": null,
+        "tabSequence": [
+          {
+            "tab": 1,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 2,
+            "focus": "a \"Explore beUI Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 3,
+            "focus": "a[aria-label=\"Star on GitHub\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 4,
+            "focus": "a \"Get Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 5,
+            "focus": "button#_r_b_[role=checkbox][aria-label=\"Select all rows\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 6,
+            "focus": "button#_r_52_[role=checkbox][aria-label=\"Select row 1\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 7,
+            "focus": "button#_r_53_[role=checkbox][aria-label=\"Select row 2\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 8,
+            "focus": "button#_r_54_[role=checkbox][aria-label=\"Select row 3\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          }
+        ],
+        "scrollRegionsInRoot": [
+          {
+            "desc": "div \"NameEmailRoleStatusMRRAva Coleava.cole0@\"",
+            "tabIndex": -1
+          }
+        ],
+        "screenshot": "table-async-safari-before.png",
+        "screenshotAfterTabs": 1
+      },
+      "after": {
+        "url": "http://localhost:3304/components/motion/table",
+        "scrollRegionReachedAtTab": 1,
+        "tabSequence": [
+          {
+            "tab": 1,
+            "focus": "div \"NameEmailRoleStatusMRRAva Coleava.cole0@\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 2,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 3,
+            "focus": "div \"$ bunx --bun shadcn add @beui/table-asyn\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 4,
+            "focus": "a \"Explore beUI Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 5,
+            "focus": "a[aria-label=\"Star on GitHub\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 6,
+            "focus": "a \"Get Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 7,
+            "focus": "div \"NameEmailRoleStatusMRRLeo Marshleo.marsh\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 8,
+            "focus": "button#_r_b_[role=checkbox][aria-label=\"Select all rows\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          }
+        ],
+        "scrollRegionsInRoot": [
+          {
+            "desc": "div \"NameEmailRoleStatusMRRAva Coleava.cole0@\"",
+            "tabIndex": 0
+          }
+        ],
+        "screenshot": "table-async-safari-after.png",
+        "screenshotAfterTabs": 1,
+        "screenshotFocus": "div \"NameEmailRoleStatusMRRAva Coleava.cole0@\""
+      }
+    },
+    {
+      "area": "infinite-masonry",
+      "title": "Infinite masonry",
+      "path": "/components/blocks/infinite-masonry",
+      "root": "#preview",
+      "capture": "infinite-masonry-safari-tabs.txt",
+      "before": {
+        "url": "http://localhost:3300/components/blocks/infinite-masonry",
+        "scrollRegionReachedAtTab": null,
+        "tabSequence": [
+          {
+            "tab": 1,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 2,
+            "focus": "a \"Explore beUI Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 3,
+            "focus": "a[aria-label=\"Star on GitHub\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 4,
+            "focus": "a \"Get Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 5,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 6,
+            "focus": "a \"Explore beUI Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 7,
+            "focus": "a[aria-label=\"Star on GitHub\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 8,
+            "focus": "a \"Get Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          }
+        ],
+        "scrollRegionsInRoot": [
+          {
+            "desc": "section[aria-label=\"Visual inspiration gallery\"] \"Soft geometry 1ArchitectureOpen horizon \"",
+            "tabIndex": -1
+          }
+        ],
+        "screenshot": "infinite-masonry-safari-before.png",
+        "screenshotAfterTabs": 1
+      },
+      "after": {
+        "url": "http://localhost:3304/components/blocks/infinite-masonry",
+        "scrollRegionReachedAtTab": 1,
+        "tabSequence": [
+          {
+            "tab": 1,
+            "focus": "section[aria-label=\"Visual inspiration gallery\"] \"Soft geometry 1ArchitectureOpen horizon \"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 2,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 3,
+            "focus": "div \"$ bunx --bun shadcn add @beui/infinite-m\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 4,
+            "focus": "a \"Explore beUI Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 5,
+            "focus": "a[aria-label=\"Star on GitHub\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 6,
+            "focus": "a \"Get Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 7,
+            "focus": "section[aria-label=\"Visual inspiration gallery\"] \"Soft geometry 1ArchitectureOpen horizon \"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 8,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          }
+        ],
+        "scrollRegionsInRoot": [
+          {
+            "desc": "section[aria-label=\"Visual inspiration gallery\"] \"Soft geometry 1ArchitectureOpen horizon \"",
+            "tabIndex": 0
+          }
+        ],
+        "screenshot": "infinite-masonry-safari-after.png",
+        "screenshotAfterTabs": 1,
+        "screenshotFocus": "section[aria-label=\"Visual inspiration gallery\"] \"Soft geometry 1ArchitectureOpen horizon \""
+      }
+    },
+    {
+      "area": "pull-to-refresh",
+      "title": "Pull to refresh",
+      "path": "/components/motion/pull-to-refresh",
+      "root": "#preview",
+      "capture": "pull-to-refresh-safari-tabs.txt",
+      "before": {
+        "url": "http://localhost:3300/components/motion/pull-to-refresh",
+        "scrollRegionReachedAtTab": null,
+        "tabSequence": [
+          {
+            "tab": 1,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 2,
+            "focus": "a \"Explore beUI Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 3,
+            "focus": "a[aria-label=\"Star on GitHub\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 4,
+            "focus": "a \"Get Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 5,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 6,
+            "focus": "a \"Explore beUI Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 7,
+            "focus": "a[aria-label=\"Star on GitHub\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 8,
+            "focus": "a \"Get Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          }
+        ],
+        "scrollRegionsInRoot": [],
+        "screenshot": "pull-to-refresh-safari-before.png",
+        "screenshotAfterTabs": 1
+      },
+      "after": {
+        "url": "http://localhost:3304/components/motion/pull-to-refresh",
+        "scrollRegionReachedAtTab": 1,
+        "tabSequence": [
+          {
+            "tab": 1,
+            "focus": "section[aria-label=\"Activity feed\"] \"Pull to refreshActivityPull down to chec\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 2,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 3,
+            "focus": "div \"$ bunx --bun shadcn add @beui/pull-to-re\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 4,
+            "focus": "a \"Explore beUI Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 5,
+            "focus": "a[aria-label=\"Star on GitHub\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 6,
+            "focus": "a \"Get Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 7,
+            "focus": "section[aria-label=\"Activity feed\"] \"Pull to refreshActivityPull down to chec\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 8,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          }
+        ],
+        "scrollRegionsInRoot": [],
+        "screenshot": "pull-to-refresh-safari-after.png",
+        "screenshotAfterTabs": 1,
+        "screenshotFocus": "section[aria-label=\"Activity feed\"] \"Pull to refreshActivityPull down to chec\""
+      }
+    },
+    {
+      "area": "agent-activity",
+      "title": "Agent activity (trace preview)",
+      "path": "/components/agents/agent-activity",
+      "root": "#agent-trace-preview",
+      "capture": "agent-activity-safari-tabs.txt",
+      "before": {
+        "url": "http://localhost:3300/components/agents/agent-activity",
+        "scrollRegionReachedAtTab": null,
+        "tabSequence": [
+          {
+            "tab": 1,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 2,
+            "focus": "a \"Explore beUI Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 3,
+            "focus": "a[aria-label=\"Star on GitHub\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 4,
+            "focus": "a \"Get Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 5,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 6,
+            "focus": "a \"Explore beUI Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 7,
+            "focus": "a[aria-label=\"Star on GitHub\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 8,
+            "focus": "a \"Get Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          }
+        ],
+        "scrollRegionsInRoot": [],
+        "screenshot": "agent-activity-safari-before.png",
+        "screenshotAfterTabs": 2
+      },
+      "after": {
+        "url": "http://localhost:3304/components/agents/agent-activity",
+        "scrollRegionReachedAtTab": 2,
+        "tabSequence": [
+          {
+            "tab": 1,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 2,
+            "focus": "div \"$ bunx --bun shadcn add @beui/agent-acti\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 3,
+            "focus": "a \"Explore beUI Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 4,
+            "focus": "a[aria-label=\"Star on GitHub\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 5,
+            "focus": "a \"Get Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 6,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 7,
+            "focus": "div \"$ bunx --bun shadcn add @beui/agent-acti\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 8,
+            "focus": "a \"Explore beUI Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          }
+        ],
+        "scrollRegionsInRoot": [],
+        "screenshot": "agent-activity-safari-after.png",
+        "screenshotAfterTabs": 2,
+        "screenshotFocus": "div \"$ bunx --bun shadcn add @beui/agent-acti\""
+      }
+    },
+    {
+      "area": "message-scroller",
+      "title": "Message scroller",
+      "path": "/components/agents/message-scroller",
+      "root": "#preview",
+      "capture": "message-scroller-safari-tabs.txt",
+      "before": {
+        "url": "http://localhost:3300/components/agents/message-scroller",
+        "scrollRegionReachedAtTab": null,
+        "tabSequence": [
+          {
+            "tab": 1,
+            "focus": "textarea[aria-label=\"Prompt\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 2,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 3,
+            "focus": "a \"Explore beUI Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 4,
+            "focus": "a[aria-label=\"Star on GitHub\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 5,
+            "focus": "a \"Get Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 6,
+            "focus": "textarea[aria-label=\"Prompt\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 7,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 8,
+            "focus": "a \"Explore beUI Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          }
+        ],
+        "scrollRegionsInRoot": [
+          {
+            "desc": "section[aria-label=\"Conversation\"] \"What should the first release include?St\"",
+            "tabIndex": -1
+          },
+          {
+            "desc": "textarea[aria-label=\"Prompt\"]",
+            "tabIndex": 0
+          }
+        ],
+        "screenshot": "message-scroller-safari-before.png",
+        "screenshotAfterTabs": 1
+      },
+      "after": {
+        "url": "http://localhost:3304/components/agents/message-scroller",
+        "scrollRegionReachedAtTab": 1,
+        "tabSequence": [
+          {
+            "tab": 1,
+            "focus": "section[aria-label=\"Conversation\"] \"What should the first release include?St\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 2,
+            "focus": "textarea[aria-label=\"Prompt\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 3,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 4,
+            "focus": "div \"$ bunx --bun shadcn add @beui/message-sc\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 5,
+            "focus": "a \"Explore beUI Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 6,
+            "focus": "a[aria-label=\"Star on GitHub\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 7,
+            "focus": "a \"Get Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 8,
+            "focus": "section[aria-label=\"Conversation\"] \"What should the first release include?St\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          }
+        ],
+        "scrollRegionsInRoot": [
+          {
+            "desc": "section[aria-label=\"Conversation\"] \"What should the first release include?St\"",
+            "tabIndex": 0
+          },
+          {
+            "desc": "textarea[aria-label=\"Prompt\"]",
+            "tabIndex": 0
+          }
+        ],
+        "screenshot": "message-scroller-safari-after.png",
+        "screenshotAfterTabs": 1,
+        "screenshotFocus": "section[aria-label=\"Conversation\"] \"What should the first release include?St\""
+      }
+    },
+    {
+      "area": "scroll-progress",
+      "title": "Scroll progress demo",
+      "path": "/components/motion/scroll-animation",
+      "root": "#scroll-progress-preview",
+      "capture": "scroll-progress-safari-tabs.txt",
+      "before": {
+        "url": "http://localhost:3300/components/motion/scroll-animation",
+        "scrollRegionReachedAtTab": null,
+        "tabSequence": [
+          {
+            "tab": 1,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 2,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 3,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 4,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 5,
+            "focus": "a \"Explore beUI Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 6,
+            "focus": "a[aria-label=\"Star on GitHub\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 7,
+            "focus": "a \"Get Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 8,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          }
+        ],
+        "scrollRegionsInRoot": [
+          {
+            "desc": "div \"Section 1Section 2Section 3Section 4Sect\"",
+            "tabIndex": -1
+          }
+        ],
+        "screenshot": "scroll-progress-safari-before.png",
+        "screenshotAfterTabs": 1
+      },
+      "after": {
+        "url": "http://localhost:3304/components/motion/scroll-animation",
+        "scrollRegionReachedAtTab": 1,
+        "tabSequence": [
+          {
+            "tab": 1,
+            "focus": "div \"Section 1Section 2Section 3Section 4Sect\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 2,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 3,
+            "focus": "div \"$ bunx --bun shadcn add @beui/scroll-pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 4,
+            "focus": "div \"Scroll down ↓Parallax↑ Scroll up\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 5,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 6,
+            "focus": "div \"$ bunx --bun shadcn add @beui/parallaxpa\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 7,
+            "focus": "div \"IntroFeaturesPricingFAQIntroFeaturesPric\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 8,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          }
+        ],
+        "scrollRegionsInRoot": [
+          {
+            "desc": "div \"Section 1Section 2Section 3Section 4Sect\"",
+            "tabIndex": 0
+          }
+        ],
+        "screenshot": "scroll-progress-safari-after.png",
+        "screenshotAfterTabs": 1,
+        "screenshotFocus": "div \"Section 1Section 2Section 3Section 4Sect\""
+      }
+    },
+    {
+      "area": "parallax",
+      "title": "Parallax demo",
+      "path": "/components/motion/scroll-animation",
+      "root": "#parallax-preview",
+      "capture": "parallax-safari-tabs.txt",
+      "before": {
+        "url": "http://localhost:3300/components/motion/scroll-animation",
+        "scrollRegionReachedAtTab": null,
+        "tabSequence": [
+          {
+            "tab": 1,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 2,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 3,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 4,
+            "focus": "a \"Explore beUI Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 5,
+            "focus": "a[aria-label=\"Star on GitHub\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 6,
+            "focus": "a \"Get Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 7,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 8,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          }
+        ],
+        "scrollRegionsInRoot": [
+          {
+            "desc": "div \"Scroll down ↓Parallax↑ Scroll up\"",
+            "tabIndex": -1
+          }
+        ],
+        "screenshot": "parallax-safari-before.png",
+        "screenshotAfterTabs": 1
+      },
+      "after": {
+        "url": "http://localhost:3304/components/motion/scroll-animation",
+        "scrollRegionReachedAtTab": 1,
+        "tabSequence": [
+          {
+            "tab": 1,
+            "focus": "div \"Scroll down ↓Parallax↑ Scroll up\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 2,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 3,
+            "focus": "div \"$ bunx --bun shadcn add @beui/parallaxpa\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 4,
+            "focus": "div \"IntroFeaturesPricingFAQIntroFeaturesPric\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 5,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 6,
+            "focus": "div \"$ bunx --bun shadcn add @beui/scroll-tos\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 7,
+            "focus": "div \"Scroll ↓Spring slideBlur inStaggered by \"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 8,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          }
+        ],
+        "scrollRegionsInRoot": [
+          {
+            "desc": "div \"Scroll down ↓Parallax↑ Scroll up\"",
+            "tabIndex": 0
+          }
+        ],
+        "screenshot": "parallax-safari-after.png",
+        "screenshotAfterTabs": 1,
+        "screenshotFocus": "div \"Scroll down ↓Parallax↑ Scroll up\""
+      }
+    },
+    {
+      "area": "scroll-reveal",
+      "title": "Scroll reveal demo",
+      "path": "/components/motion/scroll-animation",
+      "root": "#scroll-reveal-preview",
+      "capture": "scroll-reveal-safari-tabs.txt",
+      "before": {
+        "url": "http://localhost:3300/components/motion/scroll-animation",
+        "scrollRegionReachedAtTab": null,
+        "tabSequence": [
+          {
+            "tab": 1,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 2,
+            "focus": "a \"Explore beUI Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 3,
+            "focus": "a[aria-label=\"Star on GitHub\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 4,
+            "focus": "a \"Get Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 5,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 6,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 7,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 8,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          }
+        ],
+        "scrollRegionsInRoot": [
+          {
+            "desc": "div \"Scroll ↓Spring slideBlur inStaggered by \"",
+            "tabIndex": -1
+          }
+        ],
+        "screenshot": "scroll-reveal-safari-before.png",
+        "screenshotAfterTabs": 1
+      },
+      "after": {
+        "url": "http://localhost:3304/components/motion/scroll-animation",
+        "scrollRegionReachedAtTab": 1,
+        "tabSequence": [
+          {
+            "tab": 1,
+            "focus": "div \"Scroll ↓Spring slideBlur inStaggered by \"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 2,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 3,
+            "focus": "div \"$ bunx --bun shadcn add @beui/scroll-rev\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 4,
+            "focus": "a \"Explore beUI Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 5,
+            "focus": "a[aria-label=\"Star on GitHub\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 6,
+            "focus": "a \"Get Pro\"",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 7,
+            "focus": "div \"Section 1Section 2Section 3Section 4Sect\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 8,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          }
+        ],
+        "scrollRegionsInRoot": [
+          {
+            "desc": "div \"Scroll ↓Spring slideBlur inStaggered by \"",
+            "tabIndex": 0
+          }
+        ],
+        "screenshot": "scroll-reveal-safari-after.png",
+        "screenshotAfterTabs": 1,
+        "screenshotFocus": "div \"Scroll ↓Spring slideBlur inStaggered by \""
+      }
+    },
+    {
+      "area": "install-command",
+      "title": "Docs install command box (on the table page)",
+      "path": "/components/motion/table",
+      "root": "the install command card (the overflow-x-auto line whose text starts \"$ \")",
+      "capture": "install-command-safari-tabs.txt",
+      "before": {
+        "url": "http://localhost:3300/components/motion/table",
+        "scrollRegionReachedAtTab": null,
+        "tabSequence": [
+          {
+            "tab": 1,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 2,
+            "focus": "input[aria-label=\"Rename name column\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 3,
+            "focus": "input[aria-label=\"Rename role column\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 4,
+            "focus": "input[aria-label=\"Rename team column\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 5,
+            "focus": "input[aria-label=\"name for row 1\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 6,
+            "focus": "input[aria-label=\"role for row 1\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 7,
+            "focus": "input[aria-label=\"team for row 1\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 8,
+            "focus": "input[aria-label=\"name for row 2\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          }
+        ],
+        "scrollRegionsInRoot": [
+          {
+            "desc": "div \"IntroHomeGuidesMotion GuidesAgent GuideO\"",
+            "tabIndex": -1
+          },
+          {
+            "desc": "div \"NameEmailRoleStatusMRRLeo Marshleo.marsh\"",
+            "tabIndex": -1
+          },
+          {
+            "desc": "div",
+            "tabIndex": -1
+          },
+          {
+            "desc": "div \"NameEmailRoleStatusMRRAva Coleava.cole0@\"",
+            "tabIndex": -1
+          }
+        ],
+        "screenshot": "install-command-safari-before.png",
+        "screenshotAfterTabs": 2
+      },
+      "after": {
+        "url": "http://localhost:3304/components/motion/table",
+        "scrollRegionReachedAtTab": 2,
+        "tabSequence": [
+          {
+            "tab": 1,
+            "focus": "button[aria-label=\"Copy code\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 2,
+            "focus": "div \"$ bunx --bun shadcn add @beui/tabletable\"",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 3,
+            "focus": "div",
+            "tabIndex": 0,
+            "isScrollRegion": true
+          },
+          {
+            "tab": 4,
+            "focus": "input[aria-label=\"Rename name column\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 5,
+            "focus": "input[aria-label=\"Rename role column\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 6,
+            "focus": "input[aria-label=\"Rename team column\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 7,
+            "focus": "input[aria-label=\"name for row 1\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          },
+          {
+            "tab": 8,
+            "focus": "input[aria-label=\"role for row 1\"]",
+            "tabIndex": 0,
+            "isScrollRegion": false
+          }
+        ],
+        "scrollRegionsInRoot": [
+          {
+            "desc": "div \"IntroHomeGuidesMotion GuidesAgent GuideO\"",
+            "tabIndex": -1
+          },
+          {
+            "desc": "div \"NameEmailRoleStatusMRRLeo Marshleo.marsh\"",
+            "tabIndex": 0
+          },
+          {
+            "desc": "div",
+            "tabIndex": 0
+          },
+          {
+            "desc": "div \"NameEmailRoleStatusMRRAva Coleava.cole0@\"",
+            "tabIndex": 0
+          }
+        ],
+        "screenshot": "install-command-safari-after.png",
+        "screenshotAfterTabs": 2,
+        "screenshotFocus": "div \"$ bunx --bun shadcn add @beui/tabletable\""
+      }
+    }
+  ]
+}
